@@ -78,8 +78,12 @@ public:
                     AutoPtr<dng_memory_block> &compressedBuffer,
                     AutoPtr<dng_memory_block> &uncompressedBuffer,
                     AutoPtr<dng_memory_block> &subTileBlockBuffer,
+#if (DNGSDK_VERSION >= 1500)
+                    AutoPtr<dng_memory_block> &tempBuffer,
+                    bool usingMultipleThreads);
+#else
                     AutoPtr<dng_memory_block> &tempBuffer);
-
+#endif
 };
 
 #endif // GPR_WRITING

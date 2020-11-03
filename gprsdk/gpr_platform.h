@@ -28,6 +28,8 @@
 // 2 to enable low level timing
 // =================================================================================================
 
+#define DNGSDK_VERSION 1510
+
 #ifndef GPR_TIMING
     #define GPR_TIMING 1
 #endif
@@ -76,18 +78,22 @@
 typedef float float_t;
 #endif
 
-#ifdef _WIN32
+#if defined(_MSC_VER) && _MSC_VER >= 1900
 
 // Turn off warnings about deprecated functions
 #pragma warning(disable: 4996)
 
 #define INLINE __inline
 
+#elif defined(__MINGW32__) || defined(__MINGW64__)
+
+#define INLINE inline __attribute__((always_inline))
+
 #else
 
 #define INLINE inline
 
-#endif // _WIN32
+#endif
 
 #define STATIC static
 

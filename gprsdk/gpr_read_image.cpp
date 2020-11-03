@@ -77,7 +77,12 @@ void gpr_read_image::ReadTile (dng_host &host,
                                    uint32 tileByteCount,
                                    AutoPtr<dng_memory_block> &compressedBuffer,
                                    AutoPtr<dng_memory_block> &uncompressedBuffer,
+#if (DNGSDK_VERSION >= 1500)
+                                   AutoPtr<dng_memory_block> &subTileBlockBuffer,
+                                   bool usingMultipleThreads)
+#else
                                    AutoPtr<dng_memory_block> &subTileBlockBuffer)
+#endif
 {
 
     if( ifd.fCompression == ccVc5 )
@@ -122,7 +127,12 @@ void gpr_read_image::ReadTile (dng_host &host,
                                   tileByteCount,
                                   compressedBuffer,
                                   uncompressedBuffer,
+#if (DNGSDK_VERSION >= 1500)
+                                  subTileBlockBuffer,
+                                  usingMultipleThreads);
+#else
                                   subTileBlockBuffer);
+#endif
     }
 }
 
