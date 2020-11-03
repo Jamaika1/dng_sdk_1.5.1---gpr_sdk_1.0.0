@@ -95,7 +95,7 @@ struct dng_pthread_mutex_impl
 	void Lock()				   { ::EnterCriticalSection(&lock); }
 	void Unlock()			   { ::LeaveCriticalSection(&lock); }
 private:
-	dng_pthread_mutex_impl &operator=(const dng_pthread_mutex_impl &) { }
+	dng_pthread_mutex_impl &operator=(const dng_pthread_mutex_impl &) { return *this; }
 	dng_pthread_mutex_impl(const dng_pthread_mutex_impl &) { }
 };
 
@@ -126,7 +126,7 @@ struct dng_pthread_cond_impl
 
 // Non copyable
 private:
-	dng_pthread_cond_impl &operator=(const dng_pthread_cond_impl &) { }
+	dng_pthread_cond_impl &operator=(const dng_pthread_cond_impl &) { return *this; }
 	dng_pthread_cond_impl(const dng_pthread_cond_impl &) { }
 
 };
@@ -153,7 +153,7 @@ namespace
 			mutex->Unlock();
 		}
 	private:
-		ScopedLock &operator=(const ScopedLock &) { }
+		ScopedLock &operator=(const ScopedLock &) { return *this; }
 		ScopedLock(const ScopedLock &) { }
 	};
 
@@ -958,7 +958,7 @@ struct dng_pthread_rwlock_impl
 
     // Non copyable
 private:
-	dng_pthread_rwlock_impl &operator=(const dng_pthread_rwlock_impl &) { }
+	dng_pthread_rwlock_impl &operator=(const dng_pthread_rwlock_impl &) { return *this; }
 	dng_pthread_rwlock_impl(const dng_pthread_rwlock_impl &) { }
 
 
