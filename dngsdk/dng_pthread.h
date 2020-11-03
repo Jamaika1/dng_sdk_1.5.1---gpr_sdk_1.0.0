@@ -161,7 +161,7 @@ void dng_pthread_terminate();
 #undef PTHREAD_ONCE_INIT
 #define PTHREAD_ONCE_INIT DNG_PTHREAD_ONCE_INIT
 
-#if _MSC_VER < 1900
+#if (defined(_MSC_VER) && _MSC_VER < 1900) || !defined(__MINGW32__) || !defined(__MINGW64__)
 #define timespec dng_timespec
 #endif
 
