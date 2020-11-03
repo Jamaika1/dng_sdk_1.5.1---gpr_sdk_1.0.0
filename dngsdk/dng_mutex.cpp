@@ -443,15 +443,15 @@ bool dng_condition::Wait (dng_mutex &mutex, double timeoutSecs)
 		timeoutSecs += now.tv_sec;
 		timeoutSecs += now.tv_nsec / 1000000000.0;
 
-		now.tv_sec  = (long) timeoutSecs;
+		now.tv_sec  = (time_t) timeoutSecs;
 		now.tv_nsec = (long) ((timeoutSecs - now.tv_sec) * 1000000000);
 
 		#if defined(_MSC_VER) && _MSC_VER >= 1900
 
 		struct dng_timespec tempNow;
 
-		tempNow.tv_sec = (long) now.tv_sec;
-		tempNow.tv_nsec = now.tv_nsec;
+		tempNow.tv_sec = (time_t) now.tv_sec;
+		tempNow.tv_nsec = (long) now.tv_nsec;
 
 		timedOut = (pthread_cond_timedwait (&fPthreadCondition, &mutex.fPthreadMutex, &tempNow) == ETIMEDOUT);
 

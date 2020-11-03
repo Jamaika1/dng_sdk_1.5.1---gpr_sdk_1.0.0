@@ -56,7 +56,7 @@ extern "C"
 #define DNG_ETIMEDOUT       60              /* Operation timed out */
 
 struct dng_timespec {
-	long tv_sec;
+	time_t tv_sec;
 	long tv_nsec;
 };
 

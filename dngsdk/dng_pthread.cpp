@@ -728,8 +728,8 @@ int dng_pthread_cond_timedwait(dng_pthread_cond_t *cond, dng_pthread_mutex_t *mu
 	struct timespec temp;
 	dng_pthread_now (&temp);
 
-	sys_timespec.tv_sec = (long)temp.tv_sec;
-	sys_timespec.tv_nsec = temp.tv_nsec;
+	sys_timespec.tv_sec = (time_t) temp.tv_sec;
+	sys_timespec.tv_nsec = (long) temp.tv_nsec;
 
 #else
 
@@ -1281,8 +1281,8 @@ int dng_pthread_now (struct timespec *now)
 
 	sys_time *= 100;	// Convert from 100ns to 1ns units
 
-	now->tv_sec  = (long)(sys_time / 1000000000);
-	now->tv_nsec = (long)(sys_time % 1000000000);
+	now->tv_sec  = (time_t) (sys_time / 1000000000);
+	now->tv_nsec = (long) (sys_time % 1000000000);
 
 	#else
 
