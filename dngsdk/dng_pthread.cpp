@@ -34,6 +34,10 @@
 #undef _UNICODE
 */
 
+#if defined(__MINGW32__) || defined(__MINGW64__)
+#include "dng_auto_ptr.h"
+#endif
+
 #include <windows.h>
 #include <process.h>
 #include <errno.h>
@@ -58,7 +62,7 @@
 // Vista, and Camera Raw and DNG Converter 8.3 need to continue working on
 // Windows XP. -erichan 2013-11-08.
 
-#define qDNGUseConditionVariable 0
+#define qDNGUseConditionVariable 1
 
 /*****************************************************************************/
 
@@ -350,10 +354,17 @@ int dng_pthread_create(dng_pthread_t *thread, const pthread_attr_t *attrs, void 
 	{
 		uintptr_t result;
 		unsigned threadID;
+#if defined(__MINGW32__) || defined(__MINGW64__)
+		AutoPtr<trampoline_args> args(new (std::nothrow) trampoline_args);
+		AutoPtr<void *> resultHolder(new (std::nothrow) (void *));
+
+		if (args.Get() == NULL || resultHolder.Get() == NULL)
+#else
 		std::auto_ptr<trampoline_args> args(new (std::nothrow) trampoline_args);
 		std::auto_ptr<void *> resultHolder(new (std::nothrow) (void *));
 
-		if (args.get() == NULL || resultHolder.get () == NULL)
+		if (args.get() == NULL || resultHolder.get() == NULL)
+#endif
 			return -1; // ENOMEM
 
 		args->func = func;
@@ -367,21 +378,38 @@ int dng_pthread_create(dng_pthread_t *thread, const pthread_attr_t *attrs, void 
 		{
 			ScopedLock lockMap(primaryHandleMapLock);
 
+#if defined(__MINGW32__) || defined(__MINGW64__)
+			result = _beginthreadex(NULL, (unsigned)stacksize, trampoline, args.Get(), 0, &threadID);
+#else
 			result = _beginthreadex(NULL, (unsigned)stacksize, trampoline, args.get(), 0, &threadID);
+#endif
 			if (result == (uintptr_t) NULL)
 				return -1; // ENOMEM
+#if defined(__MINGW32__) || defined(__MINGW64__)
+			args.Release();
+#else
 			args.release();
+#endif
 
 			std::pair<DWORD, std::pair<HANDLE, void **> > newMapEntry(threadID,
-																	 std::pair<HANDLE, void **>((HANDLE)result, resultHolder.get ()));
+                                                             std::pair<HANDLE,
+                                                             void **>((HANDLE)result,
+#if defined(__MINGW32__) || defined(__MINGW64__)
+                                                                      resultHolder.Get()));
+#else
+                                                                      resultHolder.get()));
+#endif
 			std::pair<ThreadMapType::iterator, bool> insertion = primaryHandleMap.insert(newMapEntry);
 
 			// If there is a handle open on the thread, its ID should not be reused so assert that an insertion was made.
 			DNG_ASSERT(insertion.second, "pthread emulation logic error");
 		}
 
-
-		resultHolder.release ();
+#if defined(__MINGW32__) || defined(__MINGW64__)
+		resultHolder.Release();
+#else
+		resultHolder.release();
+#endif
 
 		*thread = (dng_pthread_t)threadID;
 		return 0;
