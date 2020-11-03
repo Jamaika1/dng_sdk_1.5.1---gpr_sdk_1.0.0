@@ -368,7 +368,7 @@ int dng_pthread_create(dng_pthread_t *thread, const pthread_attr_t *attrs, void 
 			ScopedLock lockMap(primaryHandleMapLock);
 
 			result = _beginthreadex(NULL, (unsigned)stacksize, trampoline, args.get(), 0, &threadID);
-			if (result == NULL)
+			if (result == (uintptr_t) NULL)
 				return -1; // ENOMEM
 			args.release();
 
