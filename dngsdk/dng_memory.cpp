@@ -11,6 +11,10 @@
 #include "dng_bottlenecks.h"
 #include "dng_exceptions.h"
 
+#if GPR_WRITING || GPR_READING
+#include "gpr_allocator.h"
+#endif
+
 #ifdef _MSC_VER
 #include <Windows.h>
 #endif
@@ -81,7 +85,11 @@ void dng_memory_data::Allocate (uint32 size)
 	if (size)
 		{
 		//printf("Calling malloc from %s\n", __FUNCTION__);
+#if GPR_WRITING || GPR_READING
+		fBuffer = (char *) gpr_global_malloc (size);
+#else
 		fBuffer = (char *) malloc (size);
+#endif
 
 		if (!fBuffer)
 			{
@@ -144,7 +152,11 @@ void dng_memory_data::Clear ()
 	if (fBuffer)
 		{
 
+#if GPR_WRITING || GPR_READING
+		gpr_global_free (fBuffer);
+#else
 		free (fBuffer);
+#endif
 
 		fBuffer = NULL;
 
@@ -207,7 +219,11 @@ dng_malloc_block::dng_malloc_block (uint32 logicalSize)
 
 	//fMalloc = (char *) VirtualAlloc (NULL, PhysicalSize (), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 	//printf("Calling malloc from %s\n", __FUNCTION__);
+#if GPR_WRITING || GPR_READING
+	fMalloc = (char *)gpr_global_malloc(PhysicalSize ());
+#else
 	fMalloc = (char *)malloc(PhysicalSize());
+#endif
 
 	if (!fMalloc)
 		{
@@ -235,7 +251,11 @@ dng_malloc_block::~dng_malloc_block ()
 
 		//size_t size = *(size_t*)((char*)fMalloc - 16);
 		//VirtualFree(fMalloc, 0, MEM_RELEASE);
+#if GPR_WRITING || GPR_READING
+		gpr_global_free (fMalloc);
+#else
 		free (fMalloc);
+#endif
 
 		}
 
@@ -264,7 +284,11 @@ dng_memory_block * dng_memory_allocator::Allocate (uint32 size)
 void * dng_memory_allocator::Malloc (size_t size)
 	{
 
+#if GPR_WRITING || GPR_READING
+	return gpr_global_malloc (size);
+#else
 	return malloc (size);
+#endif
 
 	}
 
@@ -273,7 +297,11 @@ void * dng_memory_allocator::Malloc (size_t size)
 void dng_memory_allocator::Free (void *ptr)
 	{
 
+#if GPR_WRITING || GPR_READING
+	gpr_global_free (ptr);
+#else
 	free (ptr);
+#endif
 
 	}
 

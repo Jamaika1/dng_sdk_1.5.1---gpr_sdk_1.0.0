@@ -13,6 +13,10 @@
 #include "dng_safe_arithmetic.h"
 #include "dng_utils.h"
 
+#if GPR_WRITING || GPR_READING
+#include "gpr_allocator.h"
+#endif
+
 /*****************************************************************************/
 
 dng_memory_stream::dng_memory_stream (dng_memory_allocator &allocator,
@@ -53,7 +57,11 @@ dng_memory_stream::~dng_memory_stream ()
 
 			}
 
+#if GPR_WRITING || GPR_READING
+		gpr_global_free (fPageList);
+#else
 		free (fPageList);
+#endif
 
 		}
 
@@ -148,7 +156,11 @@ void dng_memory_stream::DoSetLength (uint64 length)
 				ThrowOverflow ("Arithmetic overflow in DoSetLength");
 				}
 
+#if GPR_WRITING || GPR_READING
+			dng_memory_block **list = (dng_memory_block **) gpr_global_malloc (numBytes);
+#else
 			dng_memory_block **list = (dng_memory_block **) malloc (numBytes);
+#endif
 
 			if (!list)
 				{
@@ -174,7 +186,11 @@ void dng_memory_stream::DoSetLength (uint64 length)
 			if (fPageList)
 				{
 
+#if GPR_WRITING || GPR_READING
+				gpr_global_free (fPageList);
+#else
 				free (fPageList);
+#endif
 
 				}
 

@@ -38,6 +38,9 @@
 #include "dng_uncopyable.h"
 #include "dng_utils.h"
 #include "dng_xmp.h"
+#if GPR_READING
+#include "dng_read_image.h"
+#endif
 
 /*****************************************************************************/
 
@@ -3797,6 +3800,39 @@ void dng_negative::FindRawJPEGImageDigest (dng_host &host) const
 		}
 
 	}
+
+/*****************************************************************************/
+
+#if GPR_READING
+bool dng_negative::IsVc5Image (dng_info &info)
+	{
+
+	dng_ifd &rawIFD = *info.fIFD [info.fMainIndex];
+
+	return rawIFD.fCompression == ccVc5;
+
+	}
+
+void dng_negative::ReadVc5Image (dng_host &host,
+                                dng_stream &stream,
+                                dng_info &info,
+                                dng_read_image &imageReader)
+	{
+
+	dng_ifd &rawIFD = *info.fIFD [info.fMainIndex];
+
+	fRawImage.Reset (host.Make_dng_image (rawIFD.Bounds (),
+                                            rawIFD.fSamplesPerPixel,
+                                            rawIFD.PixelType ()));
+	imageReader.Read (host,
+                        rawIFD,
+                        stream,
+                        *fRawImage.Get (),
+                        NULL,
+                        NULL);
+
+	}
+#endif
 
 /*****************************************************************************/
 

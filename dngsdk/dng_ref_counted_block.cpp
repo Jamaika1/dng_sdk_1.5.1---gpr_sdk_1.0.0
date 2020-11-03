@@ -12,6 +12,10 @@
 
 #include "dng_exceptions.h"
 
+#if GPR_WRITING || GPR_READING
+#include "gpr_allocator.h"
+#endif
+
 /*****************************************************************************/
 
 dng_ref_counted_block::dng_ref_counted_block ()
@@ -53,7 +57,11 @@ void dng_ref_counted_block::Allocate (uint32 size)
 	if (size)
 		{
 
+#if GPR_WRITING || GPR_READING
+		fBuffer = gpr_global_malloc (size + sizeof (header));
+#else
 		fBuffer = malloc (size + sizeof (header));
+#endif
 
 		if (!fBuffer)
 			{
@@ -94,7 +102,11 @@ void dng_ref_counted_block::Clear ()
 
 			blockHeader->~header ();
 
+#if GPR_WRITING || GPR_READING
+			gpr_global_free (fBuffer);
+#else
 			free (fBuffer);
+#endif
 
 			}
 

@@ -1002,6 +1002,10 @@ enum dng_metadata_subset
 class dng_image_writer
 	{
 
+#if GPR_WRITING
+	bool fComputeMd5Sum; // Set to true to compute md5sum
+#endif
+
 	friend class dng_jpeg_image;
 	friend class dng_jpeg_image_encode_task;
 	friend class dng_write_tiles_task;
@@ -1022,6 +1026,11 @@ class dng_image_writer
 		dng_image_writer ();
 
 		virtual ~dng_image_writer ();
+
+#if GPR_WRITING
+		virtual uint32 GetDefaultCompression () { return ccJPEG; }
+		void SetComputeMd5Sum (bool x) { fComputeMd5Sum = x; }
+#endif
 
 		virtual void EncodeJPEGPreview (dng_host &host,
 							            const dng_image &image,

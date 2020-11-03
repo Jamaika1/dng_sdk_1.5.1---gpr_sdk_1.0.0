@@ -61,6 +61,10 @@
 
 #endif
 
+#if GPR_READING
+	typedef bool (*Vc5DecodeCallback)(dng_stream &stream, dng_image &image );
+#endif
+
 /*****************************************************************************/
 
 /// \brief Noise model for photon and sensor read noise, assuming that they are
@@ -886,6 +890,15 @@ class dng_negative
 		virtual ~dng_negative ();
 
 		static dng_negative * Make (dng_host &host);
+
+#if GPR_READING
+		bool IsVc5Image(dng_info &info);
+
+		void ReadVc5Image (dng_host &host,
+			dng_stream &stream,
+			dng_info &info,
+			dng_read_image &imageReader );
+#endif
 
 		/// Provide access to the memory allocator used for this object.
 

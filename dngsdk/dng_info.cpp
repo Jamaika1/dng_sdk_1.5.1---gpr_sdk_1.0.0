@@ -1552,6 +1552,36 @@ void dng_info::ParseDNGPrivateData (dng_host &host,
 
 		}
 
+#if GPR_WRITING || GPR_READING
+	// GoPro is storing their MakerNote in the DNGPrivateData data.
+
+	if (privateName.StartsWith ("GoPro" ) )
+	{
+
+    #if qDNGValidate
+
+	if (gVerbose)
+		{
+		printf ("Parsing GoPro DNGPrivateData\n\n");
+		}
+    #endif
+
+		if( fShared->fDNGPrivateDataCount > 0 )
+		{
+
+		host.GetGPMFPayload().Reset (host.Allocate( fShared->fDNGPrivateDataCount + 1 ) );
+
+		stream.SetReadPosition (fShared->fDNGPrivateDataOffset);
+
+		stream.Get ( host.GetGPMFPayload().Get()->Buffer(), fShared->fDNGPrivateDataCount );
+
+		}
+
+		return;
+
+	}
+#endif
+
 	// Pentax is storing their MakerNote in the DNGPrivateData data.
 
 	if (privateName.StartsWith ("PENTAX" ) ||

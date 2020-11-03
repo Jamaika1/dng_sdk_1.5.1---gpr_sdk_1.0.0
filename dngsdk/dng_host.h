@@ -110,7 +110,16 @@ class dng_host: private dng_uncopyable
 
 		bool fPreserveStage2;
 
+#if GPR_WRITING || GPR_READING
+		// Payload for General Purpose Metadata Format (GPMF)
+		AutoPtr<dng_memory_block> gpmf_payload;
+#endif
+
 	public:
+
+#if GPR_WRITING || GPR_READING
+		AutoPtr<dng_memory_block>& GetGPMFPayload() { return gpmf_payload; };
+#endif
 
 		/// Allocate a dng_host object, possiblly with custom allocator and sniffer.
 		/// \param allocator Allows controlling all memory allocation done via this

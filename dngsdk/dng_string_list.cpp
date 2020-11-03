@@ -12,6 +12,9 @@
 #include "dng_exceptions.h"
 #include "dng_string.h"
 #include "dng_utils.h"
+#if GPR_WRITING || GPR_READING
+#include "gpr_allocator.h"
+#endif
 
 /*****************************************************************************/
 
@@ -44,8 +47,11 @@ void dng_string_list::Allocate (uint32 minSize)
 
 		uint32 newSize = Max_uint32 (minSize, fAllocated * 2);
 
-		dng_string **list = (dng_string **)
-							malloc (newSize * sizeof (dng_string *));
+#if GPR_WRITING || GPR_READING
+		dng_string **list = (dng_string **) gpr_global_malloc (newSize * sizeof (dng_string *));
+#else
+		dng_string **list = (dng_string **) malloc (newSize * sizeof (dng_string *));
+#endif
 
 		if (!list)
 			{
@@ -64,7 +70,11 @@ void dng_string_list::Allocate (uint32 minSize)
 		if (fList)
 			{
 
+#if GPR_WRITING || GPR_READING
+			gpr_global_free (fList);
+#else
 			free (fList);
+#endif
 
 			}
 
@@ -142,7 +152,11 @@ void dng_string_list::Clear ()
 
 			}
 
+#if GPR_WRITING || GPR_READING
+		gpr_global_free (fList);
+#else
 		free (fList);
+#endif
 
 		fList = NULL;
 
