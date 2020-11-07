@@ -176,7 +176,7 @@ class dng_mosaic_info
 								  dng_image &dstImage,
 								  const dng_point &downScale,
 								  uint32 srcPlane = 0,
-                                  dng_matrix *scaleTransforms = NULL) const;
+                                  dng_matrix *scaleTransforms = nullptr) const;
 
 		virtual bool SupportsPreservedBlackLevels () const;
 

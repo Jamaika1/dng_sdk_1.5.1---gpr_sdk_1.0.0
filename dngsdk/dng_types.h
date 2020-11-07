@@ -17,7 +17,7 @@
 
 // Standard integer types.
 
-#ifdef _MSC_VER
+#if (defined(_MSC_VER) && _MSC_VER >= 1900) || defined(__MINGW32__) || defined(__MINGW64__)
 #include <stddef.h>
 #endif
 

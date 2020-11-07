@@ -61,7 +61,7 @@ class dng_string
 
 		static uint32 DecodeUTF8 (const char *&s,
 								  uint32 maxBytes = 6,
-								  bool *isValid = NULL);
+								  bool *isValid = nullptr);
 
 		static bool IsUTF8 (const char *s);
 
@@ -114,7 +114,7 @@ class dng_string
 
 		bool Contains (const char *s,
 					   bool case_sensitive = false,
-					   int32 *match_offset = NULL) const;
+					   int32 *match_offset = nullptr) const;
 
 		bool Replace (const char *old_string,
 					  const char *new_string,

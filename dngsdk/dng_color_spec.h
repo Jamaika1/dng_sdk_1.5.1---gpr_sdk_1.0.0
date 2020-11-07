@@ -128,9 +128,9 @@ class dng_color_spec
 	private:
 
 		dng_matrix FindXYZtoCamera (const dng_xy_coord &white,
-									dng_matrix *forwardMatrix = NULL,
-									dng_matrix *reductionMatrix = NULL,
-									dng_matrix *cameraCalibration = NULL);
+									dng_matrix *forwardMatrix = nullptr,
+									dng_matrix *reductionMatrix = nullptr,
+									dng_matrix *cameraCalibration = nullptr);
 
 	};
 

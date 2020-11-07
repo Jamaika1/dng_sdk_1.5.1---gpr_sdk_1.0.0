@@ -142,7 +142,7 @@ class dng_resample_weights
 		const real32 *Weights32 (uint32 fract) const
 			{
 
-			DNG_ASSERT (fWeights32->Buffer (), "Weights32 is NULL");
+			DNG_ASSERT (fWeights32->Buffer (), "Weights32 is nullptr");
 
 			if (fract >= kResampleSubsampleCount)
 				{
@@ -158,7 +158,7 @@ class dng_resample_weights
 		const int16 *Weights16 (uint32 fract) const
 			{
 
-			DNG_ASSERT (fWeights16->Buffer (), "Weights16 is NULL");
+			DNG_ASSERT (fWeights16->Buffer (), "Weights16 is nullptr");
 
 			if (fract >= kResampleSubsampleCount)
 				{
@@ -231,7 +231,7 @@ class dng_resample_weights_2d
 		const real32 *Weights32 (dng_point fract) const
 			{
 
-			DNG_ASSERT (fWeights32->Buffer (), "Weights32 is NULL");
+			DNG_ASSERT (fWeights32->Buffer (), "Weights32 is nullptr");
 
 			const uint32 offset = fract.v * fRowStep + fract.h * fColStep;
 
@@ -242,7 +242,7 @@ class dng_resample_weights_2d
 		const int16 *Weights16 (dng_point fract) const
 			{
 
-			DNG_ASSERT (fWeights16->Buffer (), "Weights16 is NULL");
+			DNG_ASSERT (fWeights16->Buffer (), "Weights16 is nullptr");
 
 			const uint32 offset = fract.v * fRowStep + fract.h * fColStep;
 

@@ -249,7 +249,7 @@ class dng_xmp
 						  bool padForTIFF);
 
 		virtual void SyncExif (dng_exif &exif,
-							   const dng_exif *originalExif = NULL,
+							   const dng_exif *originalExif = nullptr,
 							   bool doingUpdateFromXMP = false,
 							   bool removeFromXMP = false);
 

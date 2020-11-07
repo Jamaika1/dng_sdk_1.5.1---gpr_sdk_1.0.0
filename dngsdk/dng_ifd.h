@@ -294,8 +294,8 @@ class dng_ifd
 		virtual void ReadImage (dng_host &host,
 								dng_stream &stream,
 								dng_image &image,
-								dng_jpeg_image *jpegImage = NULL,
-								dng_fingerprint *jpegDigest = NULL) const;
+								dng_jpeg_image *jpegImage = nullptr,
+								dng_fingerprint *jpegDigest = nullptr) const;
 
 	protected:
 

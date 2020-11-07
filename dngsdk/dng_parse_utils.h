@@ -124,7 +124,7 @@ void DumpTagValues (dng_stream &stream,
 					uint32 tagCode,
 					uint32 tagType,
 					uint32 tagCount,
-					const char *tag_name = NULL);
+					const char *tag_name = nullptr);
 
 void DumpMatrix (const dng_matrix &m);
 

@@ -59,13 +59,13 @@ class AutoPtr: private dng_uncopyable
 
 		void Alloc ();
 
-		/// Return the owned pointer of this AutoPtr, NULL if none. No change in
+		/// Return the owned pointer of this AutoPtr, nullptr if none. No change in
 		/// ownership or other effects occur.
 
 		T *Get () const { return p_; }
 
-		/// Return the owned pointer of this AutoPtr, NULL if none. The AutoPtr gives
-		/// up ownership and takes NULL as its value.
+		/// Return the owned pointer of this AutoPtr, nullptr if none. The AutoPtr gives
+		/// up ownership and takes nullptr as its value.
 
 		T *Release ();
 
@@ -76,18 +76,18 @@ class AutoPtr: private dng_uncopyable
 
 		void Reset (T *p);
 
-		/// If a pointer is owned, it is deleted and the AutoPtr takes NULL as its
+		/// If a pointer is owned, it is deleted and the AutoPtr takes nullptr as its
 		/// value.
 
 		void Reset ();
 
 		/// Allows members of the owned pointer to be accessed directly. It is an
-		/// error to call this if the AutoPtr has NULL as its value.
+		/// error to call this if the AutoPtr has nullptr as its value.
 
 		T *operator-> () const { return p_; }
 
 		/// Returns a reference to the object that the owned pointer points to. It is
-		/// an error to call this if the AutoPtr has NULL as its value.
+		/// an error to call this if the AutoPtr has nullptr as its value.
 
 		T &operator* () const { return *p_; }
 
@@ -184,8 +184,8 @@ class AutoArray: private dng_uncopyable
 			p = 0;
 			}
 
-		/// Return the owned array pointer of this AutoArray, NULL if none. The
-		/// AutoArray gives up ownership and takes NULL as its value.
+		/// Return the owned array pointer of this AutoArray, nullptr if none. The
+		/// AutoArray gives up ownership and takes nullptr as its value.
 
 		T *Release ()
 			{
@@ -209,14 +209,14 @@ class AutoArray: private dng_uncopyable
 			}
 
 		/// Allows indexing into the AutoArray. It is an error to call this if the
-		/// AutoArray has NULL as its value.
+		/// AutoArray has nullptr as its value.
 
 		T &operator[] (ptrdiff_t i) const
 			{
 			return p [i];
 			}
 
-		/// Return the owned pointer of this AutoArray, NULL if none. No change in
+		/// Return the owned pointer of this AutoArray, nullptr if none. No change in
 		/// ownership or other effects occur.
 
 		T *Get () const
@@ -226,7 +226,7 @@ class AutoArray: private dng_uncopyable
 
 	private:
 
-		// Owned pointer or NULL.
+		// Owned pointer or nullptr.
 
 		T *p;
 

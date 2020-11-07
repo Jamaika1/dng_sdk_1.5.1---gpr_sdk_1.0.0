@@ -80,8 +80,8 @@ class dng_xmp_sdk
 
 		virtual ~dng_xmp_sdk ();
 
-		static void InitializeSDK (dng_xmp_namespace * extraNamespaces = NULL,
-								   const char *software = NULL);
+		static void InitializeSDK (dng_xmp_namespace * extraNamespaces = nullptr,
+								   const char *software = nullptr);
 
 		static void TerminateSDK ();
 
@@ -212,7 +212,7 @@ class dng_xmp_sdk
 		void ReplaceXMP (dng_xmp_sdk *xmp);
 
 		bool IteratePaths (IteratePathsCallback *callback,
-						   void *callbackData = NULL,
+						   void *callbackData = nullptr,
 						   const char *startNS = 0,
 						   const char *startingPath = 0);
 

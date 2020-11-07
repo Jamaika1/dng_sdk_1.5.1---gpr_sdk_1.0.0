@@ -79,7 +79,7 @@ class dng_stream: private dng_uncopyable
 
 	protected:
 
-		dng_stream (dng_abort_sniffer *sniffer = NULL,
+		dng_stream (dng_abort_sniffer *sniffer = nullptr,
 					uint32 bufferSize = kDefaultBufferSize,
 					uint64 offsetInOriginalFile = kDNGStreamInvalidOffset);
 
@@ -205,7 +205,7 @@ class dng_stream: private dng_uncopyable
 		uint64 OffsetInOriginalFile () const;
 
 		/// Return pointer to stream contents if the stream is entirely
-		/// available as a single memory block, NULL otherwise.
+		/// available as a single memory block, nullptr otherwise.
 
 		const void * Data () const;
 
@@ -584,7 +584,7 @@ class dng_stream: private dng_uncopyable
 			}
 
 		/// Putter for sniffer associated with stream.
-		/// \param sniffer The new sniffer to use (or NULL for none).
+		/// \param sniffer The new sniffer to use (or nullptr for none).
 
 		void SetSniffer (dng_abort_sniffer *sniffer)
 			{
@@ -619,7 +619,7 @@ class dng_stream_double_buffered : public dng_stream
         dng_stream_double_buffered (dng_stream &stream,
                                     uint32 bufferSize = kDefaultBufferSize)
 
-            :   dng_stream ((dng_abort_sniffer *) NULL,
+            :   dng_stream ((dng_abort_sniffer *) nullptr,
                             bufferSize,
                             stream.OffsetInOriginalFile ())
 

@@ -257,7 +257,7 @@ class dng_metadata
 
 		AutoPtr<dng_xmp> fXMP;
 
-		// If there a valid embedded XMP block, has is its digest?  NULL if no valid
+		// If there a valid embedded XMP block, has is its digest?  nullptr if no valid
 		// embedded XMP.
 
 		dng_fingerprint fEmbeddedXMPDigest;
@@ -357,7 +357,7 @@ class dng_metadata
 		const void * MakerNoteData () const
 			{
 			return fMakerNote.Get () ? fMakerNote->Buffer ()
-									 : NULL;
+									 : nullptr;
 			}
 
 		uint32 MakerNoteLength () const
@@ -387,9 +387,9 @@ class dng_metadata
 		void ResetExif (dng_exif * newExif);
 
 		dng_memory_block * BuildExifBlock (dng_memory_allocator &allocator,
-										   const dng_resolution *resolution = NULL,
+										   const dng_resolution *resolution = nullptr,
 										   bool includeIPTC = false,
-										   const dng_jpeg_preview *thumbnail = NULL) const;
+										   const dng_jpeg_preview *thumbnail = nullptr) const;
 
 		// API for original EXIF metadata.
 
@@ -483,7 +483,7 @@ template< class E >
 E & dng_metadata::Exif ()
 	{
 	dng_exif * exif = GetExif ();
-	if (!exif) ThrowProgramError ("EXIF object is NULL.");
+	if (!exif) ThrowProgramError ("EXIF object is nullptr.");
 	return dynamic_cast< E & > (*exif);
 	}
 
@@ -493,7 +493,7 @@ template< class E >
 const E & dng_metadata::Exif () const
 	{
 	const dng_exif * exif = GetExif ();
-	if (!exif) ThrowProgramError ("EXIF object is NULL.");
+	if (!exif) ThrowProgramError ("EXIF object is nullptr.");
 	return dynamic_cast< const E & > (*exif);
 	}
 
@@ -503,7 +503,7 @@ template< class X >
 X & dng_metadata::XMP ()
 	{
 	dng_xmp * xmp = GetXMP ();
-	if (!xmp) ThrowProgramError ("XMP object is NULL.");
+	if (!xmp) ThrowProgramError ("XMP object is nullptr.");
 	return dynamic_cast< X & > (*xmp);
 	}
 
@@ -513,7 +513,7 @@ template< class X >
 const X & dng_metadata::XMP () const
 	{
 	const dng_xmp * xmp = GetXMP ();
-	if (!xmp) ThrowProgramError ("XMP object is NULL.");
+	if (!xmp) ThrowProgramError ("XMP object is nullptr.");
 	return dynamic_cast< const X & > (*xmp);
 	}
 
@@ -1819,7 +1819,7 @@ class dng_negative
 
 		bool HasProfileID (const dng_camera_profile_id &id) const
 			{
-			return ProfileByID (id, false) != NULL;
+			return ProfileByID (id, false) != nullptr;
 			}
 
 		// Returns the camera profile to embed when saving to DNG:
@@ -1941,7 +1941,7 @@ class dng_negative
 		const void * OriginalRawFileData () const
 			{
 			return fOriginalRawFileData.Get () ? fOriginalRawFileData->Buffer ()
-											   : NULL;
+											   : nullptr;
 			}
 
 		uint32 OriginalRawFileDataLength () const
@@ -1981,7 +1981,7 @@ class dng_negative
 		const uint8 * PrivateData () const
 			{
 			return fDNGPrivateData.Get () ? fDNGPrivateData->Buffer_uint8 ()
-										  : NULL;
+										  : nullptr;
 			}
 
 		uint32 PrivateLength () const
@@ -2597,7 +2597,7 @@ class dng_negative
 
 		bool HasDepthMapImage () const
 			{
-			return (fDepthMap.Get () != NULL);
+			return (fDepthMap.Get () != nullptr);
 			}
 
         const dng_image * RawDepthMap () const

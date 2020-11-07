@@ -129,8 +129,8 @@ class dng_host: private dng_uncopyable
 		/// should be aborted and to communicate progress updates. Defaults to singleton
 		/// global dng_abort_sniffer, which never aborts and ignores progress updated.
 
-		dng_host (dng_memory_allocator *allocator = NULL,
-				  dng_abort_sniffer *sniffer = NULL);
+		dng_host (dng_memory_allocator *allocator = nullptr,
+				  dng_abort_sniffer *sniffer = nullptr);
 
 		/// Clean up direct memory for dng_host. Memory allocator and abort sniffer
 		/// are not deleted. Objects such as dng_image and others returned from
@@ -370,7 +370,7 @@ class dng_host: private dng_uncopyable
 
 		virtual void PerformAreaTask (dng_area_task &task,
 									  const dng_rect &area,
-                                      dng_area_task_progress *progress = NULL);
+                                      dng_area_task_progress *progress = nullptr);
 
 		/// How many multiprocessing threads does PerformAreaTask use?
 		/// Default implementation always returns 1 since it is single threaded.

@@ -47,11 +47,11 @@ class dng_memory_stream: public dng_stream
 
 		/// Construct a new memory-based stream.
 		/// \param allocator Allocator to use to allocate memory in stream as needed.
-		/// \param sniffer If non-NULL used to check for user cancellation.
+		/// \param sniffer If non-nullptr used to check for user cancellation.
 		/// \param pageSize Unit of allocation for data stored in stream.
 
 		dng_memory_stream (dng_memory_allocator &allocator,
-						   dng_abort_sniffer *sniffer = NULL,
+						   dng_abort_sniffer *sniffer = nullptr,
 						   uint32 pageSize = 64 * 1024);
 
 		virtual ~dng_memory_stream ();

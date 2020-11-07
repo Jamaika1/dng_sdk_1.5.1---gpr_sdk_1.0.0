@@ -374,7 +374,7 @@ class tag_urational_ptr: public tag_data_ptr
 	public:
 
 		tag_urational_ptr (uint16 code,
-				           const dng_urational *data = NULL,
+				           const dng_urational *data = nullptr,
 				           uint32 count = 1)
 
 			:	tag_data_ptr (code, ttRational, count, data)
@@ -415,7 +415,7 @@ class tag_srational_ptr: public tag_data_ptr
 	public:
 
 		tag_srational_ptr (uint16 code,
-				           const dng_srational *data = NULL,
+				           const dng_srational *data = nullptr,
 				           uint32 count = 1)
 
 			:	tag_data_ptr (code, ttSRational, count, data)
@@ -913,7 +913,7 @@ class exif_tag_set: private dng_uncopyable
 		exif_tag_set (dng_tiff_directory &directory,
 					  const dng_exif &exif,
 					  bool makerNoteSafe = false,
-					  const void *makerNoteData = NULL,
+					  const void *makerNoteData = nullptr,
 					  uint32 makerNoteLength = 0,
 					  bool insideDNG = false);
 
@@ -1050,12 +1050,12 @@ class dng_image_writer
 		/// \param image The actual image data to be written.
 		/// \param photometricInterpretation Either piBlackIsZero for monochrome or piRGB for RGB images.
 		/// \param compression Must be ccUncompressed.
-		/// \param negative or metadata If non-NULL, EXIF, IPTC, and XMP metadata from this negative is written to TIFF.
+		/// \param negative or metadata If non-nullptr, EXIF, IPTC, and XMP metadata from this negative is written to TIFF.
 		/// \param space If non-null and color space has an ICC profile, TIFF will be tagged with this
 		/// profile. No color space conversion of image data occurs.
-		/// \param resolution If non-NULL, TIFF will be tagged with this resolution.
-		/// \param thumbnail If non-NULL, will be stored in TIFF as preview image.
-		/// \param imageResources If non-NULL, will image resources be stored in TIFF as well.
+		/// \param resolution If non-nullptr, TIFF will be tagged with this resolution.
+		/// \param thumbnail If non-nullptr, will be stored in TIFF as preview image.
+		/// \param imageResources If non-nullptr, will image resources be stored in TIFF as well.
 		/// \param metadataSubset The subset of metadata (e.g., copyright only) to include in the TIFF.
 
 		void WriteTIFF (dng_host &host,
@@ -1064,10 +1064,10 @@ class dng_image_writer
 						uint32 photometricInterpretation,
 						uint32 compression,
 						dng_negative *negative,
-						const dng_color_space *space = NULL,
-						const dng_resolution *resolution = NULL,
-						const dng_jpeg_preview *thumbnail = NULL,
-						const dng_memory_block *imageResources = NULL,
+						const dng_color_space *space = nullptr,
+						const dng_resolution *resolution = nullptr,
+						const dng_jpeg_preview *thumbnail = nullptr,
+						const dng_memory_block *imageResources = nullptr,
 						dng_metadata_subset metadataSubset = kMetadataSubset_All,
                         bool hasTransparency = false);
 
@@ -1076,11 +1076,11 @@ class dng_image_writer
 						const dng_image &image,
 						uint32 photometricInterpretation = piBlackIsZero,
 						uint32 compression = ccUncompressed,
-						const dng_metadata *metadata = NULL,
-						const dng_color_space *space = NULL,
-						const dng_resolution *resolution = NULL,
-						const dng_jpeg_preview *thumbnail = NULL,
-						const dng_memory_block *imageResources = NULL,
+						const dng_metadata *metadata = nullptr,
+						const dng_color_space *space = nullptr,
+						const dng_resolution *resolution = nullptr,
+						const dng_jpeg_preview *thumbnail = nullptr,
+						const dng_memory_block *imageResources = nullptr,
 						dng_metadata_subset metadataSubset = kMetadataSubset_All,
                         bool hasTransparency = false);
 
@@ -1090,13 +1090,13 @@ class dng_image_writer
 		/// \param image The actual image data to be written.
 		/// \param photometricInterpretation Either piBlackIsZero for monochrome or piRGB for RGB images.
 		/// \param compression Must be ccUncompressed.
-		/// \param negative or metadata If non-NULL, EXIF, IPTC, and XMP metadata from this negative is written to TIFF.
+		/// \param negative or metadata If non-nullptr, EXIF, IPTC, and XMP metadata from this negative is written to TIFF.
 		/// \param profileData If non-null, TIFF will be tagged with this profile. No color space conversion
 		/// of image data occurs.
 		/// \param profileSize The size for the profile data.
-		/// \param resolution If non-NULL, TIFF will be tagged with this resolution.
-		/// \param thumbnail If non-NULL, will be stored in TIFF as preview image.
-		/// \param imageResources If non-NULL, will image resources be stored in TIFF as well.
+		/// \param resolution If non-nullptr, TIFF will be tagged with this resolution.
+		/// \param thumbnail If non-nullptr, will be stored in TIFF as preview image.
+		/// \param imageResources If non-nullptr, will image resources be stored in TIFF as well.
 		/// \param metadataSubset The subset of metadata (e.g., copyright only) to include in the TIFF.
 
 		void WriteTIFFWithProfile (dng_host &host,
@@ -1105,11 +1105,11 @@ class dng_image_writer
 								   uint32 photometricInterpretation,
 								   uint32 compression,
 								   dng_negative *negative,
-								   const void *profileData = NULL,
+								   const void *profileData = nullptr,
 								   uint32 profileSize = 0,
-								   const dng_resolution *resolution = NULL,
-								   const dng_jpeg_preview *thumbnail = NULL,
-								   const dng_memory_block *imageResources = NULL,
+								   const dng_resolution *resolution = nullptr,
+								   const dng_jpeg_preview *thumbnail = nullptr,
+								   const dng_memory_block *imageResources = nullptr,
 								   dng_metadata_subset metadataSubset = kMetadataSubset_All,
                                    bool hasTransparency = false);
 
@@ -1118,12 +1118,12 @@ class dng_image_writer
 										   const dng_image &image,
 										   uint32 photometricInterpretation = piBlackIsZero,
 										   uint32 compression = ccUncompressed,
-										   const dng_metadata *metadata = NULL,
-										   const void *profileData = NULL,
+										   const dng_metadata *metadata = nullptr,
+										   const void *profileData = nullptr,
 										   uint32 profileSize = 0,
-										   const dng_resolution *resolution = NULL,
-										   const dng_jpeg_preview *thumbnail = NULL,
-										   const dng_memory_block *imageResources = NULL,
+										   const dng_resolution *resolution = nullptr,
+										   const dng_jpeg_preview *thumbnail = nullptr,
+										   const dng_memory_block *imageResources = nullptr,
 										   dng_metadata_subset metadataSubset = kMetadataSubset_All,
                                            bool hasTransparency = false);
 
@@ -1138,7 +1138,7 @@ class dng_image_writer
 		void WriteDNG (dng_host &host,
 					   dng_stream &stream,
 					   dng_negative &negative,
-					   const dng_preview_list *previewList = NULL,
+					   const dng_preview_list *previewList = nullptr,
 					   uint32 maxBackwardVersion = dngVersion_SaveDefault,
 					   bool uncompressed = false);
 
@@ -1155,7 +1155,7 @@ class dng_image_writer
 										   dng_stream &stream,
 										   const dng_negative &negative,
 										   const dng_metadata &metadata,
-										   const dng_preview_list *previewList = NULL,
+										   const dng_preview_list *previewList = nullptr,
 										   uint32 maxBackwardVersion = dngVersion_SaveDefault,
 										   bool uncompressed = false);
 
@@ -1166,7 +1166,7 @@ class dng_image_writer
 									  dng_metadata &metadata,
 									  dng_metadata_subset metadataSubset,
 									  const char *dstMIME,
-									  const char *software = NULL);
+									  const char *software = nullptr);
 
 	protected:
 

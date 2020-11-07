@@ -107,7 +107,7 @@ class dng_ref_counted_block
 
 		void * Buffer ()
 			{
-			return fBuffer ? (void *) ((char *) fBuffer + sizeof (header)) : NULL;
+			return fBuffer ? (void *) ((char *) fBuffer + sizeof (header)) : nullptr;
 			}
 
 		/// Return pointer to allocated memory as a const void *.
@@ -115,7 +115,7 @@ class dng_ref_counted_block
 
 		const void * Buffer () const
 			{
-			return fBuffer ? (const void *) ((char *) fBuffer + sizeof (header)) : NULL;
+			return fBuffer ? (const void *) ((char *) fBuffer + sizeof (header)) : nullptr;
 			}
 
 		/// Return pointer to allocated memory as a char *.

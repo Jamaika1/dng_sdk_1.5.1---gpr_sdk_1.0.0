@@ -304,7 +304,7 @@ class dng_memory_block: private dng_uncopyable
 
 		dng_memory_block (uint32 logicalSize)
 			:	fLogicalSize (logicalSize)
-			,	fBuffer (NULL)
+			,	fBuffer (nullptr)
 			{
 			}
 
@@ -565,7 +565,7 @@ class dng_malloc_block : public dng_memory_block
 
 /*****************************************************************************/
 
-/// \brief Default memory allocator used if NULL is passed in for allocator
+/// \brief Default memory allocator used if nullptr is passed in for allocator
 /// when constructing a dng_host.
 ///
 /// Uses new and delete for memory block object and malloc/free for underlying

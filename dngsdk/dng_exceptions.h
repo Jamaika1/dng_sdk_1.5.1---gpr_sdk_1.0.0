@@ -35,14 +35,14 @@
 /// Display a warning message. Note that this may just eat the message.
 
 void ReportWarning (const char *message,
-				    const char *sub_message = NULL);
+				    const char *sub_message = nullptr);
 
 /*****************************************************************************/
 
 /// Display an error message. Note that this may just eat the message.
 
 void ReportError (const char *message,
-				  const char *sub_message = NULL);
+				  const char *sub_message = nullptr);
 
 /*****************************************************************************/
 
@@ -86,8 +86,8 @@ class dng_exception
 /// \brief Throw an exception based on an arbitrary error code.
 
 void Throw_dng_error (dng_error_code err,
-					  const char * message = NULL,
-					  const char * sub_message = NULL,
+					  const char * message = nullptr,
+					  const char * sub_message = nullptr,
 					  bool silent = false) DNG_NO_RETURN;
 
 /******************************************************************************/
@@ -112,10 +112,10 @@ inline void Fail_dng_error (dng_error_code err)
 /// \brief Convenience function to throw dng_exception with error code
 /// dng_error_unknown .
 
-inline void ThrowProgramError (const char * sub_message = NULL)
+inline void ThrowProgramError (const char * sub_message = nullptr)
 	{
 
-	Throw_dng_error (dng_error_unknown, NULL, sub_message);
+	Throw_dng_error (dng_error_unknown, nullptr, sub_message);
 
 	}
 
@@ -124,10 +124,10 @@ inline void ThrowProgramError (const char * sub_message = NULL)
 /// \brief Convenience function to throw dng_exception with error code
 /// dng_error_overflow.
 
-inline void ThrowOverflow (const char * sub_message = NULL)
+inline void ThrowOverflow (const char * sub_message = nullptr)
 	{
 
-	Throw_dng_error (dng_error_overflow, NULL, sub_message);
+	Throw_dng_error (dng_error_overflow, nullptr, sub_message);
 
 	}
 
@@ -136,10 +136,10 @@ inline void ThrowOverflow (const char * sub_message = NULL)
 /// \brief Convenience function to throw dng_exception with error code
 /// dng_error_not_yet_implemented .
 
-inline void ThrowNotYetImplemented (const char * sub_message = NULL)
+inline void ThrowNotYetImplemented (const char * sub_message = nullptr)
 	{
 
-	Throw_dng_error (dng_error_not_yet_implemented, NULL, sub_message);
+	Throw_dng_error (dng_error_not_yet_implemented, nullptr, sub_message);
 
 	}
 
@@ -172,11 +172,11 @@ inline void ThrowUserCanceled ()
 /// \brief Convenience function to throw dng_exception with error code
 /// dng_error_host_insufficient .
 
-inline void ThrowHostInsufficient (const char * sub_message = NULL,
+inline void ThrowHostInsufficient (const char * sub_message = nullptr,
                                    bool silent = false)
 	{
 
-	Throw_dng_error (dng_error_host_insufficient, NULL, sub_message, silent);
+	Throw_dng_error (dng_error_host_insufficient, nullptr, sub_message, silent);
 
 	}
 
@@ -185,10 +185,10 @@ inline void ThrowHostInsufficient (const char * sub_message = NULL,
 /// \brief Convenience function to throw dng_exception with error code
 /// dng_error_memory .
 
-inline void ThrowMemoryFull (const char * sub_message = NULL)
+inline void ThrowMemoryFull (const char * sub_message = nullptr)
 	{
 
-	Throw_dng_error (dng_error_memory, NULL, sub_message);
+	Throw_dng_error (dng_error_memory, nullptr, sub_message);
 
 	}
 
@@ -197,10 +197,10 @@ inline void ThrowMemoryFull (const char * sub_message = NULL)
 /// \brief Convenience function to throw dng_exception with error code
 /// dng_error_bad_format .
 
-inline void ThrowBadFormat (const char * sub_message = NULL)
+inline void ThrowBadFormat (const char * sub_message = nullptr)
 	{
 
-	Throw_dng_error (dng_error_bad_format, NULL, sub_message);
+	Throw_dng_error (dng_error_bad_format, nullptr, sub_message);
 
 	}
 
@@ -209,10 +209,10 @@ inline void ThrowBadFormat (const char * sub_message = NULL)
 /// \brief Convenience function to throw dng_exception with error code
 /// dng_error_matrix_math .
 
-inline void ThrowMatrixMath (const char * sub_message = NULL)
+inline void ThrowMatrixMath (const char * sub_message = nullptr)
 	{
 
-	Throw_dng_error (dng_error_matrix_math, NULL, sub_message);
+	Throw_dng_error (dng_error_matrix_math, nullptr, sub_message);
 
 	}
 
@@ -221,10 +221,10 @@ inline void ThrowMatrixMath (const char * sub_message = NULL)
 /// \brief Convenience function to throw dng_exception with error code
 /// dng_error_open_file .
 
-inline void ThrowOpenFile (const char * sub_message = NULL, bool silent = false)
+inline void ThrowOpenFile (const char * sub_message = nullptr, bool silent = false)
 	{
 
-	Throw_dng_error (dng_error_open_file, NULL, sub_message, silent);
+	Throw_dng_error (dng_error_open_file, nullptr, sub_message, silent);
 
 	}
 
@@ -233,10 +233,10 @@ inline void ThrowOpenFile (const char * sub_message = NULL, bool silent = false)
 /// \brief Convenience function to throw dng_exception with error code
 /// dng_error_read_file .
 
-inline void ThrowReadFile (const char *sub_message = NULL)
+inline void ThrowReadFile (const char *sub_message = nullptr)
 	{
 
-	Throw_dng_error (dng_error_read_file, NULL, sub_message);
+	Throw_dng_error (dng_error_read_file, nullptr, sub_message);
 
 	}
 
@@ -245,10 +245,10 @@ inline void ThrowReadFile (const char *sub_message = NULL)
 /// \brief Convenience function to throw dng_exception with error code
 /// dng_error_write_file .
 
-inline void ThrowWriteFile (const char *sub_message = NULL)
+inline void ThrowWriteFile (const char *sub_message = nullptr)
 	{
 
-	Throw_dng_error (dng_error_write_file, NULL, sub_message);
+	Throw_dng_error (dng_error_write_file, nullptr, sub_message);
 
 	}
 
@@ -257,10 +257,10 @@ inline void ThrowWriteFile (const char *sub_message = NULL)
 /// \brief Convenience function to throw dng_exception with error code
 /// dng_error_end_of_file .
 
-inline void ThrowEndOfFile (const char *sub_message = NULL)
+inline void ThrowEndOfFile (const char *sub_message = nullptr)
 	{
 
-	Throw_dng_error (dng_error_end_of_file, NULL, sub_message);
+	Throw_dng_error (dng_error_end_of_file, nullptr, sub_message);
 
 	}
 

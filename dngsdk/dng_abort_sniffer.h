@@ -101,7 +101,7 @@ class dng_abort_sniffer
 		/// will be called if one is pending. This static method is provided as a
 		/// convenience for quickly testing for an abort and throwing an exception
 		/// if one is pending.
-		/// \param sniffer The dng_sniffer to test for a pending abort. Can be NULL,
+		/// \param sniffer The dng_sniffer to test for a pending abort. Can be nullptr,
 		/// in which case there an abort is never signalled.
 
 		static void SniffForAbort (dng_abort_sniffer *sniffer);
@@ -180,7 +180,7 @@ class dng_sniffer_task: private dng_uncopyable
 		/// to take, from 0.0 to 1.0 .
 
 		dng_sniffer_task (dng_abort_sniffer *sniffer,
-					      const char *name = NULL,
+					      const char *name = nullptr,
 					      real64 fract = 0.0)
 
 			:	fSniffer (sniffer)
