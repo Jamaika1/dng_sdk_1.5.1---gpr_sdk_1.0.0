@@ -28,11 +28,13 @@
 #include "dng_uncopyable.h"
 #include "dng_utils.h"
 
+#if !GPR_READING
 #include "zlib.h"
 
 #if qDNGUseLibJPEG
 #include "jpeglib.h"
 #include "jerror.h"
+#endif
 #endif
 
 /******************************************************************************/
@@ -1459,7 +1461,7 @@ bool dng_read_image::ReadUncompressed (dng_host &host,
 
 /*****************************************************************************/
 
-#if qDNGUseLibJPEG
+#if qDNGUseLibJPEG && !GPR_READING
 
 /*****************************************************************************/
 
@@ -1524,7 +1526,7 @@ void dng_read_image::DecodeLossyJPEG (dng_host &host,
                                       bool /* usingMultipleThreads */)
 	{
 
-	#if qDNGUseLibJPEG
+	#if qDNGUseLibJPEG && !GPR_READING
 
 	struct jpeg_decompress_struct cinfo;
 
@@ -2335,6 +2337,7 @@ void dng_read_image::ReadTile (dng_host &host,
 			else
 				{
 
+#if !GPR_READING
 				uLongf dstLen = uncompressedSize.Get ();
 
 				int err = uncompress ((Bytef *) buffer.fData,
@@ -2369,6 +2372,7 @@ void dng_read_image::ReadTile (dng_host &host,
 					{
 					ThrowBadFormat ();
 					}
+#endif
 
 				}
 
