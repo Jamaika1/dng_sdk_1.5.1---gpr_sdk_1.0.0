@@ -165,7 +165,7 @@ dng_opcode_Unknown::dng_opcode_Unknown (dng_host &host,
 
 	:	dng_opcode (opcodeID,
 					stream,
-					NULL)
+					nullptr)
 
 	,	fData ()
 

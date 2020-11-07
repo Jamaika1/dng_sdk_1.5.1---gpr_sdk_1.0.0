@@ -1821,7 +1821,7 @@ void dng_mosaic_info::InterpolateGeneric (dng_host &host,
 								1,
 								srcImage.PixelType (),
 								pcInterleaved,
-								NULL);
+								nullptr);
 
 	uint32 srcBufferSize = ComputeBufferSize (srcBuffer.fPixelType,
 											  srcTileSize,
@@ -1839,7 +1839,7 @@ void dng_mosaic_info::InterpolateGeneric (dng_host &host,
 								fColorPlanes,
 								dstImage.PixelType (),
 								pcRowInterleaved,
-								NULL);
+								nullptr);
 
 	uint32 dstBufferSize = ComputeBufferSize (dstBuffer.fPixelType,
 											  dstTileSize,

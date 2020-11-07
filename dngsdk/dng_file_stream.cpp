@@ -16,11 +16,11 @@ dng_file_stream::dng_file_stream (const char *filename,
 								  bool output,
 								  uint32 bufferSize)
 
-	:	dng_stream ((dng_abort_sniffer *) NULL,
+	:	dng_stream ((dng_abort_sniffer *) nullptr,
 					bufferSize,
 					0)
 
-	,	fFile (NULL)
+	,	fFile (nullptr)
 
 	{
 
@@ -56,11 +56,11 @@ dng_file_stream::dng_file_stream (const wchar_t *filename,
 								  bool output,
 								  uint32 bufferSize)
 
-	:	dng_stream ((dng_abort_sniffer *) NULL,
+	:	dng_stream ((dng_abort_sniffer *) nullptr,
 					bufferSize,
 					0)
 
-	,	fFile (NULL)
+	,	fFile (nullptr)
 
 	{
 
@@ -108,7 +108,7 @@ dng_file_stream::~dng_file_stream ()
 	if (fFile)
 		{
 		fclose (fFile);
-		fFile = NULL;
+		fFile = nullptr;
 		}
 
 	}

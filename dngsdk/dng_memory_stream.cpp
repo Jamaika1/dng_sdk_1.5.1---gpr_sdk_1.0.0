@@ -32,7 +32,7 @@ dng_memory_stream::dng_memory_stream (dng_memory_allocator &allocator,
 
 	,	fPageCount      (0)
 	,	fPagesAllocated (0)
-	,	fPageList       (NULL)
+	,	fPageList       (nullptr)
 
 	,	fMemoryStreamLength (0)
 
@@ -124,7 +124,7 @@ void dng_memory_stream::DoSetLength (uint64 length)
 
         Throw_dng_error (dng_error_end_of_file,
                          "dng_memory_stream::fLengthLimit",
-                         NULL,
+                         nullptr,
                          true);
 
         }

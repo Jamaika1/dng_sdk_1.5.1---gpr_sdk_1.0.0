@@ -30,7 +30,7 @@ dng_stream::dng_stream (dng_abort_sniffer *sniffer,
 	,	fOffsetInOriginalFile (offsetInOriginalFile)
 	,	fPosition			  (0)
 	,	fMemBlock			  ()
-	,	fBuffer				  (NULL)
+	,	fBuffer				  (nullptr)
 	,	fBufferSize			  (Max_uint32 (bufferSize, gDNGStreamBlockSize * 2))
 	,	fBufferStart		  (0)
 	,	fBufferEnd			  (0)
@@ -64,7 +64,7 @@ dng_stream::dng_stream (const void *data,
 	,	fBufferEnd			  (count)
 	,	fBufferLimit		  (count)
 	,	fBufferDirty		  (false)
-	,	fSniffer			  (NULL)
+	,	fSniffer			  (nullptr)
 
 	{
 
@@ -185,7 +185,7 @@ const void * dng_stream::Data () const
 
 		}
 
-	return NULL;
+	return nullptr;
 
 	}
 
@@ -1225,8 +1225,8 @@ void dng_stream::DuplicateStream (dng_stream &dstStream)
 
 	// Turn off sniffers for this operation.
 
-	TempStreamSniffer noSniffer1 (*this    , NULL);
-	TempStreamSniffer noSniffer2 (dstStream, NULL);
+	TempStreamSniffer noSniffer1 (*this    , nullptr);
+	TempStreamSniffer noSniffer2 (dstStream, nullptr);
 
 	// First grow the destination stream if required, in an attempt to
 	// reserve any needed space before overwriting the existing data.

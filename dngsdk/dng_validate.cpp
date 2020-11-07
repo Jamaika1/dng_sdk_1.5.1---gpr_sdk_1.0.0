@@ -386,7 +386,7 @@ static dng_error_code dng_validate (const char *filename)
 				// Skip preview if writing a compresssed main image to save space
 				// in this example code.
 
-				if (negative->RawJPEGImage () != NULL && previewIndex > 0)
+				if (negative->RawJPEGImage () != nullptr && previewIndex > 0)
 					{
 					break;
 					}
@@ -427,7 +427,7 @@ static dng_error_code dng_validate (const char *filename)
 				// If we have compressed JPEG data, create a compressed thumbnail.  Otherwise
 				// save a uncompressed thumbnail.
 
-				bool useCompressedPreview = (negative->RawJPEGImage () != NULL) ||
+				bool useCompressedPreview = (negative->RawJPEGImage () != nullptr) ||
 											(previewIndex > 0);
 
 				AutoPtr<dng_preview> preview (useCompressedPreview ?

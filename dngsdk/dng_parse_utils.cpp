@@ -50,7 +50,7 @@ static const char * LookupName (uint32 key,
 
 		}
 
-	return NULL;
+	return nullptr;
 
 	}
 
@@ -479,7 +479,7 @@ const char * LookupTagCode (uint32 parentCode,
 		{	tcContaxHeader,					"ContaxHeader"	}
 		};
 
-	const char *name = NULL;
+	const char *name = nullptr;
 
 	if (parentCode == 0         										 ||
 		parentCode == tcExifIFD 										 ||
@@ -2821,7 +2821,7 @@ void ParseStringTag (dng_stream &stream,
 				char message [256];
 
 				sprintf (message,
-						 "%s %s is not NULL terminated",
+						 "%s %s is not nullptr terminated",
 						 LookupParentCode (parentCode),
 						 LookupTagCode (parentCode, tagCode));
 
@@ -2911,7 +2911,7 @@ void ParseDualStringTag (dng_stream &stream,
 				char message [256];
 
 				sprintf (message,
-						 "%s %s is not NULL terminated",
+						 "%s %s is not nullptr terminated",
 						 LookupParentCode (parentCode),
 						 LookupTagCode (parentCode, tagCode));
 
@@ -2934,7 +2934,7 @@ void ParseDualStringTag (dng_stream &stream,
 
 	s1.Set_UTF8_or_System (buffer);
 
-	s2.Set_ASCII (NULL);
+	s2.Set_ASCII (nullptr);
 
 	for (uint32 j = 1; j < tagCount - 1; j++)
 		{

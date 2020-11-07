@@ -22,7 +22,7 @@ dng_string_list::dng_string_list ()
 
 	:	fCount     (0)
 	,	fAllocated (0)
-	,	fList      (NULL)
+	,	fList      (nullptr)
 
 	{
 
@@ -158,7 +158,7 @@ void dng_string_list::Clear ()
 		free (fList);
 #endif
 
-		fList = NULL;
+		fList = nullptr;
 
 		}
 

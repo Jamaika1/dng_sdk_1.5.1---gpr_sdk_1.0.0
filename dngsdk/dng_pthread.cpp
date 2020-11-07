@@ -26,7 +26,7 @@
 
 // Nothing in this file requires Unicode,
 // However, CreateSemaphore has a path parameter
-// (which is NULL always in this code) and thus
+// (which is nullptr always in this code) and thus
 // does not work on Win98 if UNICODE is defined.
 // So we force it off here.
 
@@ -124,7 +124,7 @@ struct dng_pthread_cond_impl
 										// saves having to walk the waiters list setting
 										// each one's "chosen_by_signal" flag while the condition is locked
 
-	dng_pthread_cond_impl() : head_waiter(NULL), tail_waiter(NULL), broadcast_generation(0) { }
+	dng_pthread_cond_impl() : head_waiter(nullptr), tail_waiter(nullptr), broadcast_generation(0) { }
 	~dng_pthread_cond_impl() { }
 #endif
 
@@ -176,7 +176,7 @@ namespace
 		ScopedLock lock(validationLock);
 
 		if (*mutex == DNG_PTHREAD_MUTEX_INITIALIZER)
-			dng_pthread_mutex_init(mutex, NULL);
+			dng_pthread_mutex_init(mutex, nullptr);
 	}
 
 	void ValidateCond(dng_pthread_cond_t *cond)
@@ -187,7 +187,7 @@ namespace
 		ScopedLock lock(validationLock);
 
 		if (*cond == DNG_PTHREAD_COND_INITIALIZER)
-			dng_pthread_cond_init(cond, NULL);
+			dng_pthread_cond_init(cond, nullptr);
 	}
 #endif
 
@@ -223,9 +223,9 @@ namespace
 		dng_pthread_once(&once_thread_TLS, init_thread_TLS);
 
 		HANDLE semaphore = ::TlsGetValue(thread_wait_sema_TLS_index);
-		if (semaphore == NULL)
+		if (semaphore == nullptr)
 		{
-			semaphore = ::CreateSemaphore(NULL, 0, 1, NULL);
+			semaphore = ::CreateSemaphore(nullptr, 0, 1, nullptr);
 			::TlsSetValue(thread_wait_sema_TLS_index, semaphore);
 		}
 
@@ -238,9 +238,9 @@ namespace
 		{
 			HANDLE semaphore = (HANDLE)::TlsGetValue(thread_wait_sema_TLS_index);
 
-			if (semaphore != NULL)
+			if (semaphore != nullptr)
 			{
-				::TlsSetValue(thread_wait_sema_TLS_index, NULL);
+				::TlsSetValue(thread_wait_sema_TLS_index, nullptr);
 				::CloseHandle(semaphore);
 			}
 		}
@@ -298,7 +298,7 @@ int dng_pthread_attr_init(pthread_attr_t *attr)
 	dng_pthread_attr_impl *newAttrs;
 
 	newAttrs = new (std::nothrow) dng_pthread_attr_impl;
-	if (newAttrs == NULL)
+	if (newAttrs == nullptr)
 		return -1; // ENOMEM;
 
 	newAttrs->stacksize = 0;
@@ -312,12 +312,12 @@ int dng_pthread_attr_init(pthread_attr_t *attr)
 
 int dng_pthread_attr_destroy(pthread_attr_t *attr)
 	{
-	if (*attr == NULL)
+	if (*attr == nullptr)
 		return -1; // EINVAL
 
 	delete *attr;
 
-	*attr = NULL;
+	*attr = nullptr;
 
 	return 0;
 	}
@@ -326,7 +326,7 @@ int dng_pthread_attr_destroy(pthread_attr_t *attr)
 
 int dng_pthread_attr_setstacksize(dng_pthread_attr_t *attr, size_t stacksize)
 	{
-	if (attr == NULL || (*attr) == NULL)
+	if (attr == nullptr || (*attr) == nullptr)
 		return -1; // EINVAL
 
 	(*attr)->stacksize = stacksize;
@@ -338,7 +338,7 @@ int dng_pthread_attr_setstacksize(dng_pthread_attr_t *attr, size_t stacksize)
 
 int dng_pthread_attr_getstacksize(const dng_pthread_attr_t *attr, size_t *stacksize)
 	{
-	if (attr == NULL || (*attr) == NULL || stacksize == NULL)
+	if (attr == nullptr || (*attr) == nullptr || stacksize == nullptr)
 		return -1; // EINVAL
 
 	*stacksize = (*attr)->stacksize;
@@ -352,18 +352,18 @@ int dng_pthread_create(dng_pthread_t *thread, const pthread_attr_t *attrs, void 
 {
 	try
 	{
-		uintptr_t result;
+		std::uintptr_t result;
 		unsigned threadID;
 #if defined(__MINGW32__) || defined(__MINGW64__)
 		AutoPtr<trampoline_args> args(new (std::nothrow) trampoline_args);
 		AutoPtr<void *> resultHolder(new (std::nothrow) (void *));
 
-		if (args.Get() == NULL || resultHolder.Get() == NULL)
+		if (args.Get() == nullptr || resultHolder.Get() == nullptr)
 #else
 		std::auto_ptr<trampoline_args> args(new (std::nothrow) trampoline_args);
 		std::auto_ptr<void *> resultHolder(new (std::nothrow) (void *));
 
-		if (args.get() == NULL || resultHolder.get() == NULL)
+		if (args.get() == nullptr || resultHolder.get() == nullptr)
 #endif
 			return -1; // ENOMEM
 
@@ -372,18 +372,18 @@ int dng_pthread_create(dng_pthread_t *thread, const pthread_attr_t *attrs, void 
 
 		size_t stacksize = 0;
 
-		if (attrs != NULL)
+		if (attrs != nullptr)
 			dng_pthread_attr_getstacksize (attrs, &stacksize);
 
 		{
 			ScopedLock lockMap(primaryHandleMapLock);
 
 #if defined(__MINGW32__) || defined(__MINGW64__)
-			result = _beginthreadex(NULL, (unsigned)stacksize, trampoline, args.Get(), 0, &threadID);
+			result = _beginthreadex(nullptr, (unsigned)stacksize, trampoline, args.Get(), 0, &threadID);
 #else
-			result = _beginthreadex(NULL, (unsigned)stacksize, trampoline, args.get(), 0, &threadID);
+			result = _beginthreadex(nullptr, (unsigned)stacksize, trampoline, args.get(), 0, &threadID);
 #endif
-			if (result == (uintptr_t) NULL)
+			if ((HANDLE)result == nullptr)
 				return -1; // ENOMEM
 #if defined(__MINGW32__) || defined(__MINGW64__)
 			args.Release();
@@ -425,7 +425,7 @@ int dng_pthread_create(dng_pthread_t *thread, const pthread_attr_t *attrs, void 
 int dng_pthread_detach(dng_pthread_t thread)
 {
 	HANDLE primaryHandle;
-	void **resultHolder = NULL;
+	void **resultHolder = nullptr;
 
 	{
 		ScopedLock lockMap(primaryHandleMapLock);
@@ -437,7 +437,7 @@ int dng_pthread_detach(dng_pthread_t thread)
 		primaryHandle = iter->second.first;
 
 		// A join is waiting on the thread.
-		if (primaryHandle == NULL)
+		if (primaryHandle == nullptr)
 			return -1;
 
 		resultHolder = iter->second.second;
@@ -462,8 +462,8 @@ int dng_pthread_detach(dng_pthread_t thread)
 int dng_pthread_join(dng_pthread_t thread, void **result)
 {
 	bool found = false;
-	HANDLE primaryHandle = NULL;
-	void **resultHolder = NULL;
+	HANDLE primaryHandle = nullptr;
+	void **resultHolder = nullptr;
 
 	ThreadMapType::iterator iter;
 
@@ -477,17 +477,17 @@ int dng_pthread_join(dng_pthread_t thread, void **result)
 			primaryHandle = iter->second.first;
 			resultHolder = iter->second.second;
 
-			// Set HANDLE to NULL to force any later join or detach to fail.
-			iter->second.first = NULL;
+			// Set HANDLE to nullptr to force any later join or detach to fail.
+			iter->second.first = nullptr;
 		}
 	}
 
 	// This case can happens when joining a thread not created with pthread_create,
-	// which is a bad idea, but it gets mapped to doing the join, but always returns NULL.
+	// which is a bad idea, but it gets mapped to doing the join, but always returns nullptr.
 	if (!found)
 		primaryHandle = ::OpenThread(SYNCHRONIZE|THREAD_QUERY_INFORMATION, FALSE, thread);
 
-	if (primaryHandle == NULL)
+	if (primaryHandle == nullptr)
 		return -1;
 
 	DWORD err;
@@ -509,7 +509,7 @@ int dng_pthread_join(dng_pthread_t thread, void **result)
 #else
 	::CloseHandle(primaryHandle);
 #endif
-	if (result != NULL && resultHolder != NULL)
+	if (result != nullptr && resultHolder != nullptr)
 		*result = *resultHolder;
 
 	delete resultHolder;
@@ -553,7 +553,7 @@ int dng_pthread_mutex_init(dng_pthread_mutex_t *mutex, void * /* attrs */)
 		return -1;
 	}
 
-	if (result == NULL)
+	if (result == nullptr)
 		return -1;
 	*mutex = result;
 	return 0;
@@ -565,12 +565,12 @@ int dng_pthread_mutex_destroy(dng_pthread_mutex_t *mutex)
 {
 	if (*mutex == DNG_PTHREAD_MUTEX_INITIALIZER)
 	{
-		*mutex = NULL;
+		*mutex = nullptr;
 		return 0;
 	}
 
 	delete *mutex;
-	*mutex = NULL;
+	*mutex = nullptr;
 	return 0;
 }
 
@@ -586,7 +586,7 @@ int dng_pthread_cond_init(dng_pthread_cond_t *cond, void * /* attrs */)
 		return -1;
 	}
 
-	if (result == NULL)
+	if (result == nullptr)
 		return -1;
 	*cond = result;
 	return 0;
@@ -598,12 +598,12 @@ int dng_pthread_cond_destroy(dng_pthread_cond_t *cond)
 {
 	if (*cond == DNG_PTHREAD_COND_INITIALIZER)
 	{
-		*cond = NULL;
+		*cond = nullptr;
 		return 0;
 	}
 
 	delete *cond;
-	*cond = NULL;
+	*cond = nullptr;
 	return 0;
 }
 
@@ -663,7 +663,7 @@ static int cond_wait_internal(dng_pthread_cond_t *cond, dng_pthread_mutex_t *mut
 	int my_generation; // The broadcast generation this waiter is in
 
 	{
-		this_wait.next = NULL;
+		this_wait.next = nullptr;
 		this_wait.semaphore = semaphore;
 		this_wait.chosen_by_signal = 0;
 
@@ -671,12 +671,12 @@ static int cond_wait_internal(dng_pthread_cond_t *cond, dng_pthread_mutex_t *mut
 
 		// Add this waiter to the end of the list.
 		this_wait.prev = real_cond.tail_waiter;
-		if (real_cond.tail_waiter != NULL)
+		if (real_cond.tail_waiter != nullptr)
 			real_cond.tail_waiter->next = &this_wait;
 		real_cond.tail_waiter = &this_wait;
 
 		// If the list was empty, set the head of the list to this waiter.
-		if (real_cond.head_waiter == NULL)
+		if (real_cond.head_waiter == nullptr)
 			real_cond.head_waiter = &this_wait;
 
 		// Note which broadcast generation this waiter belongs to.
@@ -706,12 +706,12 @@ static int cond_wait_internal(dng_pthread_cond_t *cond, dng_pthread_mutex_t *mut
 			else
 			{
 				// Still on waiters list. Remove this waiter from list.
-				if (this_wait.next != NULL)
+				if (this_wait.next != nullptr)
 					this_wait.next->prev = this_wait.prev;
 				else
 					real_cond.tail_waiter = this_wait.prev;
 
-				if (this_wait.prev != NULL)
+				if (this_wait.prev != nullptr)
 					this_wait.prev->next = this_wait.next;
 				else
 					real_cond.head_waiter = this_wait.next;
@@ -796,12 +796,12 @@ int dng_pthread_cond_signal(dng_pthread_cond_t *cond)
 		ScopedLock lock(real_cond.lock);
 
 		first = real_cond.head_waiter;
-		if (first != NULL)
+		if (first != nullptr)
 		{
-			if (first->next != NULL)
-				first->next->prev = NULL;
+			if (first->next != nullptr)
+				first->next->prev = nullptr;
 			else
-				real_cond.tail_waiter = NULL; // Or first->prev, which is always NULL in this case
+				real_cond.tail_waiter = nullptr; // Or first->prev, which is always nullptr in this case
 
 			first->chosen_by_signal = true;
 
@@ -809,8 +809,8 @@ int dng_pthread_cond_signal(dng_pthread_cond_t *cond)
 		}
 	}
 
-	if (first != NULL)
-		::ReleaseSemaphore(first->semaphore, 1, NULL);
+	if (first != nullptr)
+		::ReleaseSemaphore(first->semaphore, 1, nullptr);
 
 	return 0;
 #endif
@@ -836,16 +836,16 @@ int dng_pthread_cond_broadcast(dng_pthread_cond_t *cond)
 		ScopedLock lock(real_cond.lock);
 
 		first = real_cond.head_waiter;
-		real_cond.head_waiter = NULL;
-		real_cond.tail_waiter = NULL;
+		real_cond.head_waiter = nullptr;
+		real_cond.tail_waiter = nullptr;
 
 		real_cond.broadcast_generation++;
 	}
 
-	while (first != NULL)
+	while (first != nullptr)
 	{
 		waiter *next = first->next;
-		::ReleaseSemaphore(first->semaphore, 1, NULL);
+		::ReleaseSemaphore(first->semaphore, 1, nullptr);
 		first = next;
 	}
 
@@ -857,7 +857,7 @@ int dng_pthread_cond_broadcast(dng_pthread_cond_t *cond)
 
 int dng_pthread_once(dng_pthread_once_t *once, void (*init_func)())
 {
-	if (once == NULL || init_func == NULL)
+	if (once == nullptr || init_func == nullptr)
 		return EINVAL;
 
 	if (once->inited)
@@ -881,7 +881,7 @@ int dng_pthread_once(dng_pthread_once_t *once, void (*init_func)())
 
 int dng_pthread_key_create(dng_pthread_key_t * key, void (*destructor) (void *))
 {
-	if (destructor != NULL)
+	if (destructor != nullptr)
 		return -1;
 
 	DWORD result = ::TlsAlloc();
@@ -958,8 +958,8 @@ struct dng_pthread_rwlock_impl
 
 	dng_pthread_rwlock_impl ()
 		: mutex ()
-		, head_waiter (NULL)
-		, tail_waiter (NULL)
+		, head_waiter (nullptr)
+		, tail_waiter (nullptr)
 		, readers_active (0)
 		, writers_waiting (0)
 		, read_wait ()
@@ -977,10 +977,10 @@ struct dng_pthread_rwlock_impl
 		HANDLE semaphore = head_waiter->semaphore;
 
 		head_waiter = head_waiter->next;
-		if (head_waiter == NULL)
-			tail_waiter = NULL;
+		if (head_waiter == nullptr)
+			tail_waiter = nullptr;
 
-		::ReleaseSemaphore(semaphore, 1, NULL);
+		::ReleaseSemaphore(semaphore, 1, nullptr);
 	}
 #endif
 
@@ -999,7 +999,7 @@ int dng_pthread_rwlock_init(dng_pthread_rwlock_t *rwlock, const pthread_rwlockat
 	dng_pthread_rwlock_impl *newRWLock;
 
 	newRWLock = new (std::nothrow) dng_pthread_rwlock_impl;
-	if (newRWLock == NULL)
+	if (newRWLock == nullptr)
 		return -1; // ENOMEM;
 
 	*rwlock = newRWLock;
@@ -1018,7 +1018,7 @@ int dng_pthread_rwlock_destroy(dng_pthread_rwlock_t *rwlock)
 	{
 		ScopedLock lock (real_rwlock.mutex);
 
-		if (real_rwlock.head_waiter != NULL ||
+		if (real_rwlock.head_waiter != nullptr ||
 			real_rwlock.readers_active != 0 ||
 			real_rwlock.writers_waiting != 0 ||
 			real_rwlock.writer_active)
@@ -1027,7 +1027,7 @@ int dng_pthread_rwlock_destroy(dng_pthread_rwlock_t *rwlock)
 #endif
 
 	delete *rwlock;
-	*rwlock = NULL;
+	*rwlock = nullptr;
 	return 0;
 }
 
@@ -1059,7 +1059,7 @@ int dng_pthread_rwlock_rdlock(dng_pthread_rwlock_t *rwlock)
 	struct rw_waiter this_wait;
 	bool doWait = false;;
 	int result = 0;
-	HANDLE semaphore=NULL;
+	HANDLE semaphore = nullptr;
 
 		{
 
@@ -1071,18 +1071,18 @@ int dng_pthread_rwlock_rdlock(dng_pthread_rwlock_t *rwlock)
 		{
 			semaphore = GetThreadSemaphore();
 
-			this_wait.next = NULL;
+			this_wait.next = nullptr;
 			this_wait.semaphore = semaphore;
 			this_wait.is_writer = false;
 
 			// Add this waiter to the end of the list.
 			this_wait.prev = real_rwlock.tail_waiter;
-			if (real_rwlock.tail_waiter != NULL)
+			if (real_rwlock.tail_waiter != nullptr)
 				real_rwlock.tail_waiter->next = &this_wait;
 			real_rwlock.tail_waiter = &this_wait;
 
 			// If the list was empty, set the head of the list to this waiter.
-			if (real_rwlock.head_waiter == NULL)
+			if (real_rwlock.head_waiter == nullptr)
 				real_rwlock.head_waiter = &this_wait;
 
 			doWait = true;
@@ -1185,7 +1185,7 @@ int dng_pthread_rwlock_unlock(dng_pthread_rwlock_t *rwlock)
 	else
 		real_rwlock.writer_active = false;
 
-	while (real_rwlock.head_waiter != NULL)
+	while (real_rwlock.head_waiter != nullptr)
 	{
 		if (real_rwlock.head_waiter->is_writer)
 		{
@@ -1225,7 +1225,7 @@ int dng_pthread_rwlock_wrlock(dng_pthread_rwlock_t *rwlock)
 
 	int result = 0;
 	struct rw_waiter this_wait;
-	HANDLE semaphore=NULL;
+	HANDLE semaphore = nullptr;
 	bool doWait = false;
 
 	{
@@ -1239,18 +1239,18 @@ int dng_pthread_rwlock_wrlock(dng_pthread_rwlock_t *rwlock)
 			{
 			semaphore = GetThreadSemaphore();
 
-			this_wait.next = NULL;
+			this_wait.next = nullptr;
 			this_wait.semaphore = semaphore;
 			this_wait.is_writer = true;
 
 			// Add this waiter to the end of the list.
 			this_wait.prev = real_rwlock.tail_waiter;
-			if (real_rwlock.tail_waiter != NULL)
+			if (real_rwlock.tail_waiter != nullptr)
 				real_rwlock.tail_waiter->next = &this_wait;
 			real_rwlock.tail_waiter = &this_wait;
 
 			// If the list was empty, set the head of the list to this waiter.
-			if (real_rwlock.head_waiter == NULL)
+			if (real_rwlock.head_waiter == nullptr)
 				real_rwlock.head_waiter = &this_wait;
 
 			real_rwlock.writers_waiting++;
@@ -1293,7 +1293,7 @@ void dng_pthread_terminate()
 int dng_pthread_now (struct timespec *now)
 	{
 
-	if (now == NULL)
+	if (now == nullptr)
 		return -1; // EINVAL
 
 	#if qWinOS
@@ -1316,7 +1316,7 @@ int dng_pthread_now (struct timespec *now)
 
 	struct timeval tv;
 
-	if (gettimeofday (&tv, NULL) != 0)
+	if (gettimeofday (&tv, nullptr) != 0)
 		return errno;
 
 	now->tv_sec  = tv.tv_sec;

@@ -124,7 +124,7 @@ class dng_xmp_private
 		SXMPMeta *fMeta;
 
 		dng_xmp_private ()
-			:	fMeta (NULL)
+			:	fMeta (nullptr)
 			{
 			}
 
@@ -150,7 +150,7 @@ class dng_xmp_private
 
 dng_xmp_private::dng_xmp_private (const dng_xmp_private &xmp)
 
-	:	fMeta (NULL)
+	:	fMeta (nullptr)
 
 	{
 
@@ -172,7 +172,7 @@ dng_xmp_private::dng_xmp_private (const dng_xmp_private &xmp)
 
 dng_xmp_sdk::dng_xmp_sdk ()
 
-	:	fPrivate (NULL)
+	:	fPrivate (nullptr)
 
 	{
 
@@ -189,7 +189,7 @@ dng_xmp_sdk::dng_xmp_sdk ()
 
 dng_xmp_sdk::dng_xmp_sdk (const dng_xmp_sdk &sdk)
 
-	:	fPrivate (NULL)
+	:	fPrivate (nullptr)
 
 	{
 
@@ -312,10 +312,10 @@ void dng_xmp_sdk::InitializeSDK (dng_xmp_namespace * extraNamespaces,
 
 			// Register extra namespaces.
 
-			if (extraNamespaces != NULL)
+			if (extraNamespaces != nullptr)
 				{
 
-				for (; extraNamespaces->fullName != NULL; ++extraNamespaces)
+				for (; extraNamespaces->fullName != nullptr; ++extraNamespaces)
 					{
 
 					TXMP_STRING_TYPE ss;
@@ -424,7 +424,7 @@ void dng_xmp_sdk::ClearMeta ()
 
 		delete fPrivate->fMeta;
 
-		fPrivate->fMeta = NULL;
+		fPrivate->fMeta = nullptr;
 
 		}
 
@@ -623,8 +623,8 @@ bool dng_xmp_sdk::HasNameSpace (const char *ns) const
 
 			if (iter.Next (&nsTemp,
 						   &prop,
-						   NULL,
-						   NULL))
+						   nullptr,
+						   nullptr))
 				{
 
 				result = true;
@@ -676,7 +676,7 @@ void dng_xmp_sdk::RemoveProperties (const char *ns)
 
 			SXMPUtils::RemoveProperties (fPrivate->fMeta,
 										 ns,
-										 NULL,
+										 nullptr,
 										 kXMPUtil_DoAllProperties);
 
 			}
@@ -925,7 +925,7 @@ bool dng_xmp_sdk::GetString (const char *ns,
 
 			TXMP_STRING_TYPE ss;
 
-			if (fPrivate->fMeta->GetProperty (ns, path, &ss, NULL))
+			if (fPrivate->fMeta->GetProperty (ns, path, &ss, nullptr))
 				{
 
 				s.Set (ss.c_str ());
@@ -966,7 +966,7 @@ void dng_xmp_sdk::ValidateStringList (const char *ns,
 												  path,
 												  index++,
 												  &ss,
-												  NULL))
+												  nullptr))
 				{
 
 				}
@@ -1016,7 +1016,7 @@ bool dng_xmp_sdk::GetStringList (const char *ns,
 												  path,
 												  index++,
 												  &ss,
-												  NULL))
+												  nullptr))
 				{
 
 				dng_string s;
@@ -1061,9 +1061,9 @@ bool dng_xmp_sdk::GetAltLangDefault (const char *ns,
 												   path,
 												   "x-default",
 									  	   		   "x-default",
-												   NULL,
+												   nullptr,
 									  	  		   &ss,
-												   NULL))
+												   nullptr))
 				{
 
 				s.Set (ss.c_str ());
@@ -1092,7 +1092,7 @@ bool dng_xmp_sdk::GetAltLangDefault (const char *ns,
 			else if (fPrivate->fMeta->GetProperty (ns,
 												   path,
 												   &ss,
-												   NULL))
+												   nullptr))
 				{
 
 				if (ss.empty ())
@@ -1155,7 +1155,7 @@ bool dng_xmp_sdk::GetLocalString (const char *ns,
                                                        kXMP_NS_XML,
                                                        "lang",
                                                        &langS,
-                                                       NULL))
+                                                       nullptr))
                         {
 
                         dng_string language;
@@ -1173,7 +1173,7 @@ bool dng_xmp_sdk::GetLocalString (const char *ns,
                         if (fPrivate->fMeta->GetProperty (ns,
                                                           arrayItemPath.Get (),
                                                           &tranS,
-                                                          NULL))
+                                                          nullptr))
                             {
 
                             dng_string translation;
@@ -1227,7 +1227,7 @@ bool dng_xmp_sdk::GetStructField (const char *ns,
 												 fieldNS,
 												 fieldName,
 												 &ss,
-												 NULL))
+												 nullptr))
 				{
 
 				s.Set (ss.c_str ());
@@ -1596,7 +1596,7 @@ dng_memory_block * dng_xmp_sdk::Serialize (dng_memory_allocator &allocator,
 
 		}
 
-	return NULL;
+	return nullptr;
 
 	}
 
@@ -1695,7 +1695,7 @@ void dng_xmp_sdk::ReplaceXMP (dng_xmp_sdk *xmp)
 
 		fPrivate->fMeta = xmp->fPrivate->fMeta;
 
-		xmp->fPrivate->fMeta = NULL;
+		xmp->fPrivate->fMeta = nullptr;
 
 		}
 
@@ -1722,8 +1722,8 @@ bool dng_xmp_sdk::IteratePaths (IteratePathsCallback *callback,
 
 			while (iter.Next (&ns,
 							  &prop,
-							  NULL,
-							  NULL))
+							  nullptr,
+							  nullptr))
 				{
 
 				if (!callback (ns  .c_str (),

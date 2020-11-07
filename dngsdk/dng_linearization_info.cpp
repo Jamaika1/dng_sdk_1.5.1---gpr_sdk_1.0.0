@@ -313,7 +313,7 @@ dng_linearize_plane::dng_linearize_plane (dng_host &host,
 
 		// Find linearization table, if any.
 
-		uint16 *lut = NULL;
+		uint16 *lut = nullptr;
 
 		uint32 lutEntries = 0;
 
@@ -524,7 +524,7 @@ void dng_linearize_plane::Process (const dng_rect &srcTile)
 					b1 = fBlack_1D_buffer->Buffer_real32 () [dstRow % fBlack_1D_rows];
 					}
 
-				const real32 *b2 = NULL;
+				const real32 *b2 = nullptr;
 
 				uint32 b2_count = fBlack_2D_cols;
 				uint32 b2_phase = 0;
@@ -675,7 +675,7 @@ void dng_linearize_plane::Process (const dng_rect &srcTile)
 				b1 = fBlack_1D_buffer->Buffer_int32 () [dstRow % fBlack_1D_rows];
 				}
 
-			const int32 *b2 = NULL;
+			const int32 *b2 = nullptr;
 
 			uint32 b2_count = fBlack_2D_cols;
 			uint32 b2_phase = 0;
@@ -777,7 +777,7 @@ void dng_linearize_plane::Process (const dng_rect &srcTile)
 				b1 = fBlack_1D_buffer->Buffer_real32 () [dstRow % fBlack_1D_rows];
 				}
 
-			const real32 *b2 = NULL;
+			const real32 *b2 = nullptr;
 
 			uint32 b2_count = fBlack_2D_cols;
 			uint32 b2_phase = 0;

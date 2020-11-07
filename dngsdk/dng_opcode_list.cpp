@@ -51,7 +51,7 @@ void dng_opcode_list::Clear ()
 
 			delete fList [index];
 
-			fList [index] = NULL;
+			fList [index] = nullptr;
 
 			}
 
@@ -141,7 +141,7 @@ void dng_opcode_list::Append (AutoPtr<dng_opcode> &opcode)
 
 	opcode->SetStage (fStage);
 
-	fList.push_back (NULL);
+	fList.push_back (nullptr);
 
 	fList [fList.size () - 1] = opcode.Release ();
 
@@ -154,7 +154,7 @@ dng_memory_block * dng_opcode_list::Spool (dng_host &host) const
 
 	if (IsEmpty ())
 		{
-		return NULL;
+		return nullptr;
 		}
 
 	if (AlwaysApply ())

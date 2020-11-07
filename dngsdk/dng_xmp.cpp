@@ -26,7 +26,7 @@ dng_xmp::dng_xmp (dng_memory_allocator &allocator)
 
 	:	fAllocator (allocator)
 
-	,	fSDK (NULL)
+	,	fSDK (nullptr)
 
 	{
 
@@ -45,7 +45,7 @@ dng_xmp::dng_xmp (const dng_xmp &xmp)
 
 	:	fAllocator (xmp.fAllocator)
 
-	,	fSDK (NULL)
+	,	fSDK (nullptr)
 
 	{
 
@@ -662,7 +662,7 @@ void dng_xmp::RemoveEmptyStringOrArray (const char *ns,
 								        const char *path)
 	{
 
-	if (path == NULL || path [0] == 0)
+	if (path == nullptr || path [0] == 0)
 		{
 		return;
 		}
@@ -700,7 +700,7 @@ void dng_xmp::RemoveEmptyStringsAndArrays (const char *ns)
 	IteratePaths (RemoveEmptyStringsAndArraysCallback,
 				  (void *) this,
 				  ns,
-				  NULL);
+				  nullptr);
 
 	}
 
@@ -4192,7 +4192,7 @@ void dng_xmp::SyncExifDate (const char *ns,
         if (s.IsEmpty ())
             {
 
-            // XMP contains an NULL string.  Clear EXIF date,
+            // XMP contains an nullptr string.  Clear EXIF date,
             // and remove XMP tag if possible.
 
             exifDateTime.Clear ();

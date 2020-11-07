@@ -96,7 +96,7 @@ static void Assign_Multibyte (dng_string &dngString,
 		aMapping.otherEncoding   = encoding;
 		aMapping.mappingVersion  = kUnicodeUseLatestMapping;
 
-		TextToUnicodeInfo aInfo = NULL;
+		TextToUnicodeInfo aInfo = nullptr;
 
 		if (::CreateTextToUnicodeInfo (&aMapping, &aInfo) == noErr)
 			{
@@ -110,9 +110,9 @@ static void Assign_Multibyte (dng_string &dngString,
 									    kUnicodeUseFallbacksMask |
 									    kUnicodeLooseMappingsMask,
 									    0,
-									    NULL,
-									    NULL,
-									    NULL,
+									    nullptr,
+									    nullptr,
+									    nullptr,
 									    aBufSize.Get (),
 									    &aInput,
 									    &aOutput,
@@ -164,7 +164,7 @@ static uint32 Extract_Multibyte (const dng_string &dngString,
 		aMapping.otherEncoding   = encoding;
 		aMapping.mappingVersion  = kUnicodeUseLatestMapping;
 
-		UnicodeToTextInfo aInfo = NULL;
+		UnicodeToTextInfo aInfo = nullptr;
 
 		if (::CreateUnicodeToTextInfo (&aMapping, &aInfo) == noErr)
 			{
@@ -179,9 +179,9 @@ static uint32 Extract_Multibyte (const dng_string &dngString,
 									    kUnicodeLooseMappingsMask |
 									    kUnicodeDefaultDirectionMask,
 									    0,
-									    NULL,
-									    NULL,
-									    NULL,
+									    nullptr,
+									    nullptr,
+									    nullptr,
 									    aBufSize.Get (),
 									    &aInput,
 									    &aOutput,
@@ -229,7 +229,7 @@ static void Assign_SystemEncoding (dng_string &dngString,
 	::UpgradeScriptInfoToTextEncoding (smSystemScript,
 									   kTextLanguageDontCare,
 									   kTextRegionDontCare,
-									   NULL,
+									   nullptr,
 									   &aEncoding);
 
 	Assign_Multibyte (dngString,
@@ -247,7 +247,7 @@ static uint32 Extract_SystemEncoding (const dng_string &dngString,
 	::UpgradeScriptInfoToTextEncoding (smSystemScript,
 									   kTextLanguageDontCare,
 									   kTextRegionDontCare,
-									   NULL,
+									   nullptr,
 									   &aEncoding);
 
 	return Extract_Multibyte (dngString,
@@ -348,8 +348,8 @@ static uint32 Extract_Multibyte (const dng_string &dngString,
 										 aCount,
 										 dBuffer.Buffer_char (),
 										 dBufSize.Get (),
-										 NULL,
-										 NULL);
+										 nullptr,
+										 nullptr);
 
 	if (aResult < 0)
 		aResult = 0;
@@ -518,9 +518,9 @@ void dng_string::Set (const char *s)
 
 	// Measure the new length.
 
-	uint32 newLen = (s != NULL ? strlenAsUint32 (s) : 0);
+	uint32 newLen = (s != nullptr ? strlenAsUint32 (s) : 0);
 
-	// If it is a NULL string, then clear the buffer.
+	// If it is a nullptr string, then clear the buffer.
 
 	if (newLen == 0)
 		{
@@ -1278,7 +1278,7 @@ void dng_string::Set_UTF16 (const uint16 *s)
 void dng_string::Clear ()
 	{
 
-	Set (NULL);
+	Set (nullptr);
 
 	}
 
@@ -1612,7 +1612,7 @@ bool dng_string::Replace (const char *old_string,
 			const char *s = fData.Buffer_char () + match_offset + len2;
 				  char *d = fData.Buffer_char () + match_offset + len3;
 
-			uint32 extra = len1 - match_offset - len2 + 1;	// + 1 for NULL termination
+			uint32 extra = len1 - match_offset - len2 + 1;	// + 1 for nullptr termination
 
 			for (uint32 j = 0; j < extra; j++)
 				{
@@ -1648,7 +1648,7 @@ bool dng_string::Replace (const char *old_string,
 
 				}
 
-			uint32 extra = len1 - match_offset - len2 + 1;	// + 1 for NULL termination
+			uint32 extra = len1 - match_offset - len2 + 1;	// + 1 for nullptr termination
 
 			DNG_REQUIRE (fData.Buffer_char (), "Bad string in dng_string::Replace");
 
@@ -2089,7 +2089,7 @@ void dng_string::ForceASCII ()
 			else
 				{
 
-				const char *ascii = NULL;
+				const char *ascii = nullptr;
 
 				const uint32 kTableEntrys = sizeof (kUnicodeToLowASCII    ) /
 									        sizeof (kUnicodeToLowASCII [0]);

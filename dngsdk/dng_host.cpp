@@ -406,7 +406,7 @@ dng_opcode * dng_host::Make_dng_opcode (uint32 opcodeID,
 										dng_stream &stream)
 	{
 
-	dng_opcode *result = NULL;
+	dng_opcode *result = nullptr;
 
 	switch (opcodeID)
 		{

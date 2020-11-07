@@ -1444,7 +1444,7 @@ dng_image * dng_render::Render ()
 					   tempImage->Bounds (),
 					   dng_resample_bicubic::Get ());
 
-        if (srcMask != NULL)
+        if (srcMask != nullptr)
             {
 
             tempMask.Reset (fHost.Make_dng_image (dstSize,

@@ -719,7 +719,7 @@ dng_memory_block * dng_iptc::Spool (dng_memory_allocator &allocator,
 
 	char s [64];
 
-	dng_memory_stream stream (allocator, NULL, 2048);
+	dng_memory_stream stream (allocator, nullptr, 2048);
 
 	stream.SetBigEndian ();
 

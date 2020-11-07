@@ -52,7 +52,7 @@ dng_info::~dng_info ()
         if (fIFD [index])
             {
             delete fIFD [index];
-            fIFD [index] = NULL;
+            fIFD [index] = nullptr;
             }
 
         }
@@ -63,7 +63,7 @@ dng_info::~dng_info ()
         if (fChainedIFD [index2])
             {
             delete fChainedIFD [index2];
-            fChainedIFD [index2] = NULL;
+            fChainedIFD [index2] = nullptr;
             }
 
         }
@@ -77,7 +77,7 @@ dng_info::~dng_info ()
             if (fChainedSubIFD [index3] [index4])
                 {
                 delete fChainedSubIFD [index3] [index4];
-                fChainedSubIFD [index3] [index4] = NULL;
+                fChainedSubIFD [index3] [index4] = nullptr;
                 }
 
             }
@@ -158,7 +158,7 @@ void dng_info::ParseTag (dng_host &host,
 
 		parentCode = tcPanasonicRAW;
 
-		ifd = NULL;
+		ifd = nullptr;
 
 		}
 
@@ -344,7 +344,7 @@ void dng_info::ParseTag (dng_host &host,
 			}
 
 		// If type is ASCII, then parse anyway so we report any ASCII
-		// NULL termination or character set errors.
+		// nullptr termination or character set errors.
 
 		else if (tagType == ttAscii)
 			{
@@ -912,7 +912,7 @@ bool dng_info::ParseMakerNoteIFD (dng_host &host,
 				  localTag ? ifdStream : stream,
 				  fExif.Get (),
 				  fShared.Get (),
-				  NULL,
+				  nullptr,
 				  parentCode,
 				  tagCode,
 				  tagType,
@@ -1740,7 +1740,7 @@ void dng_info::ParseDNGPrivateData (dng_host &host,
 						  stream,
 						  fExif.Get (),
 						  fShared.Get (),
-						  NULL,
+						  nullptr,
 						  tcFujiRAF,
 						  tcFujiHeader,
 						  ttUndefined,
@@ -1765,7 +1765,7 @@ void dng_info::ParseDNGPrivateData (dng_host &host,
 						  stream,
 						  fExif.Get (),
 						  fShared.Get (),
-						  NULL,
+						  nullptr,
 						  tcFujiRAF,
 						  tcFujiRawInfo1,
 						  ttUndefined,
@@ -1790,7 +1790,7 @@ void dng_info::ParseDNGPrivateData (dng_host &host,
 						  stream,
 						  fExif.Get (),
 						  fShared.Get (),
-						  NULL,
+						  nullptr,
 						  tcFujiRAF,
 						  tcFujiRawInfo2,
 						  ttUndefined,
@@ -1831,7 +1831,7 @@ void dng_info::ParseDNGPrivateData (dng_host &host,
 						  stream,
 						  fExif.Get (),
 						  fShared.Get (),
-						  NULL,
+						  nullptr,
 						  tcContaxRAW,
 						  tcContaxHeader,
 						  ttUndefined,
@@ -1886,7 +1886,7 @@ void dng_info::ParseDNGPrivateData (dng_host &host,
 								  stream,
 								  fExif.Get (),
 								  fShared.Get (),
-								  NULL,
+								  nullptr,
 								  tcCanonCRW,
 								  tagCode,
 								  ttUndefined,
@@ -1989,7 +1989,7 @@ void dng_info::ParseDNGPrivateData (dng_host &host,
 							  stream,
 							  fExif.Get (),
 							  fShared.Get (),
-							  NULL,
+							  nullptr,
 							  parentCode,
 							  tagCode,
 							  tagType,
@@ -2182,8 +2182,8 @@ void dng_info::Parse (dng_host &host,
 
 		ParseIFD (host,
 				  stream,
-				  NULL,
-				  NULL,
+				  nullptr,
+				  nullptr,
 				  fChainedIFD [ChainedIFDCount () - 1],
 				  fTIFFBlockOffset + next_offset,
 				  fTIFFBlockOffset,
@@ -2317,7 +2317,7 @@ void dng_info::Parse (dng_host &host,
 				  stream,
 				  fExif.Get (),
 				  fShared.Get (),
-				  NULL,
+				  nullptr,
 				  fTIFFBlockOffset + fShared->fExifIFD,
 				  fTIFFBlockOffset,
 				  tcExifIFD);
@@ -2333,7 +2333,7 @@ void dng_info::Parse (dng_host &host,
 				  stream,
 				  fExif.Get (),
 				  fShared.Get (),
-				  NULL,
+				  nullptr,
 				  fTIFFBlockOffset + fShared->fGPSInfo,
 				  fTIFFBlockOffset,
 				  tcGPSInfo);
@@ -2357,7 +2357,7 @@ void dng_info::Parse (dng_host &host,
 					  stream,
 					  fExif.Get (),
 					  fShared.Get (),
-					  NULL,
+					  nullptr,
 					  fTIFFBlockOffset + fShared->fInteroperabilityIFD,
 					  fTIFFBlockOffset,
 					  tcInteroperabilityIFD);
@@ -2386,7 +2386,7 @@ void dng_info::Parse (dng_host &host,
 				  stream,
 				  fExif.Get (),
 				  fShared.Get (),
-				  NULL,
+				  nullptr,
 				  fTIFFBlockOffset + fShared->fKodakDCRPrivateIFD,
 				  fTIFFBlockOffset,
 				  tcKodakDCRPrivateIFD);
@@ -2402,7 +2402,7 @@ void dng_info::Parse (dng_host &host,
 				  stream,
 				  fExif.Get (),
 				  fShared.Get (),
-				  NULL,
+				  nullptr,
 				  fTIFFBlockOffset + fShared->fKodakKDCPrivateIFD,
 				  fTIFFBlockOffset,
 				  tcKodakKDCPrivateIFD);

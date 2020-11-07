@@ -1256,7 +1256,7 @@ dng_hue_sat_map * dng_camera_profile::HueSatMapForWhite (const dng_xy_coord &whi
 
 		}
 
-	return NULL;
+	return nullptr;
 
 	}
 

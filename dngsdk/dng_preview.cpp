@@ -473,7 +473,7 @@ dng_raw_preview_tag_set::dng_raw_preview_tag_set (dng_tiff_directory &directory,
 	,	fOpcodeList2Tag (tcOpcodeList2,
 						 ttUndefined,
 						 0,
-						 NULL)
+						 nullptr)
 
 	,	fWhiteLevelTag (tcWhiteLevel,
 						fWhiteLevelData,

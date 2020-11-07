@@ -122,7 +122,7 @@ void dng_show_message (const char *s)
 	// This is not thread safe.  Multiple message boxes can be launched.
 	// Should also be launched in its own thread so main msg queue isn't thrown off.
 	if (gBreakOnAsserts)
-		MessageBoxA (NULL, (LPSTR) s, NULL, MB_OK);
+		MessageBoxA (nullptr, (LPSTR) s, nullptr, MB_OK);
 	else if (gPrintAsserts)
 		fprintf (stderr, "%s%s", s, nl);
 
@@ -273,7 +273,7 @@ real64 TickTimeInSeconds ()
 
 	struct timeval tv;
 
-	gettimeofday (&tv, NULL);
+	gettimeofday (&tv, nullptr);
 
 	return tv.tv_sec + (real64)tv.tv_usec * 1.0e-6;
 

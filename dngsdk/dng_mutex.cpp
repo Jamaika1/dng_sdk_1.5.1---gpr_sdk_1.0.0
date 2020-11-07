@@ -40,7 +40,7 @@ namespace
 
 				{
 
-				int result = pthread_key_create (&fInnermostMutexKey, NULL);
+				int result = pthread_key_create (&fInnermostMutexKey, nullptr);
 
 				DNG_ASSERT (result == 0, "pthread_key_create failed.");
 
@@ -102,7 +102,7 @@ dng_mutex::dng_mutex (const char *mutexName, uint32 mutexLevel)
 	:	fPthreadMutex		()
 	,	fMutexLevel			(mutexLevel)
 	,	fRecursiveLockCount (0)
-	,	fPrevHeldMutex		(NULL)
+	,	fPrevHeldMutex		(nullptr)
 	,	fMutexName			(mutexName)
 
 	#endif
@@ -114,7 +114,7 @@ dng_mutex::dng_mutex (const char *mutexName, uint32 mutexLevel)
 	#if qWinOS
 
 	// Win is already a recursive mutex by default
-	if (pthread_mutex_init (&fPthreadMutex, NULL) != 0)
+	if (pthread_mutex_init (&fPthreadMutex, nullptr) != 0)
 		{
 		ThrowMemoryFull ();
 		}
@@ -159,7 +159,7 @@ void dng_mutex::Lock ()
 
 	dng_mutex *innermostMutex = gInnermostMutexHolder.GetInnermostMutex ();
 
-	if (innermostMutex != NULL)
+	if (innermostMutex != nullptr)
 		{
 
 		if (innermostMutex == this)
@@ -270,7 +270,7 @@ void dng_mutex::Unlock ()
 
 	gInnermostMutexHolder.SetInnermostMutex (fPrevHeldMutex);
 
-	fPrevHeldMutex = NULL;
+	fPrevHeldMutex = nullptr;
 
     #endif
 
@@ -381,7 +381,7 @@ dng_condition::dng_condition ()
 #if qDNGThreadSafe
 	int result;
 
-	result = pthread_cond_init (&fPthreadCondition, NULL);
+	result = pthread_cond_init (&fPthreadCondition, nullptr);
 
 	DNG_ASSERT (result == 0, "pthread_cond_init failed.");
 
@@ -422,7 +422,7 @@ bool dng_condition::Wait (dng_mutex &mutex, double timeoutSecs)
 
 	gInnermostMutexHolder.SetInnermostMutex (innermostMutex);
 
-	mutex.fPrevHeldMutex = NULL;
+	mutex.fPrevHeldMutex = nullptr;
 
     #endif
 

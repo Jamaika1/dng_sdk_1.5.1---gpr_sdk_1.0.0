@@ -330,7 +330,7 @@ struct DecompressInfo
     int16 MCUmembership[10];
 
     /*
-     * ptrs to Huffman coding tables, or NULL if not defined
+     * ptrs to Huffman coding tables, or nullptr if not defined
      */
     HuffmanTable *dcHuffTblPtrs[4];
 
@@ -506,8 +506,8 @@ dng_lossless_decoder::dng_lossless_decoder (dng_stream *stream,
 	,	mcuBuffer2     ()
 	,	mcuBuffer3     ()
 	,	mcuBuffer4     ()
-	,	mcuROW1		   (NULL)
-	,	mcuROW2		   (NULL)
+	,	mcuROW1		   (nullptr)
+	,	mcuROW2		   (nullptr)
 	,	getBuffer      (0)
 	,	bitsLeft	   (0)
 
@@ -596,7 +596,7 @@ void dng_lossless_decoder::GetDht ()
 
 		HuffmanTable *&htblptr = info.dcHuffTblPtrs [index];
 
-		if (htblptr == NULL)
+		if (htblptr == nullptr)
 			{
 
 			huffmanBuffer [index] . Allocate (sizeof (HuffmanTable));
@@ -1287,7 +1287,7 @@ void dng_lossless_decoder::HuffDecoderInit ()
 			ThrowBadFormat ();
 			}
 
-		if (info.dcHuffTblPtrs [compptr->dcTblNo] == NULL)
+		if (info.dcHuffTblPtrs [compptr->dcTblNo] == nullptr)
 			{
 	    	ThrowBadFormat ();
 			}

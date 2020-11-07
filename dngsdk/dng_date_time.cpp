@@ -925,9 +925,9 @@ dng_time_zone LocalTimeZone (const dng_date_time &dt)
 
 		#if qWinOS
 
-		if (GetTimeZoneInformation          != NULL &&
-			SystemTimeToTzSpecificLocalTime != NULL &&
-		    SystemTimeToFileTime            != NULL)
+		if (GetTimeZoneInformation          != nullptr &&
+			SystemTimeToTzSpecificLocalTime != nullptr &&
+		    SystemTimeToFileTime            != nullptr)
 			{
 
 			TIME_ZONE_INFORMATION tzInfo;

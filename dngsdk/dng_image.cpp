@@ -23,7 +23,7 @@ dng_tile_buffer::dng_tile_buffer (const dng_image &image,
 						 		  bool dirty)
 
 	:	fImage   (image)
-	,	fRefData (NULL)
+	,	fRefData (nullptr)
 
 	{
 
@@ -132,7 +132,7 @@ dng_image * dng_image::Clone () const
 
 	ThrowProgramError ("Clone is not supported by this dng_image subclass");
 
-	return NULL;
+	return nullptr;
 
 	}
 

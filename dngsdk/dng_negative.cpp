@@ -195,7 +195,7 @@ template< class T >
 T * CloneAutoPtr (const AutoPtr< T > &ptr)
 	{
 
-	return ptr.Get () ? ptr->Clone () : NULL;
+	return ptr.Get () ? ptr->Clone () : nullptr;
 
 	}
 
@@ -205,7 +205,7 @@ template< class T, typename U >
 T * CloneAutoPtr (const AutoPtr< T > &ptr, U &u)
 	{
 
-	return ptr.Get () ? ptr->Clone (u) : NULL;
+	return ptr.Get () ? ptr->Clone (u) : nullptr;
 
 	}
 
@@ -458,7 +458,7 @@ const void * dng_metadata::IPTCData () const
 
 		}
 
-	return NULL;
+	return nullptr;
 
 	}
 
@@ -1104,7 +1104,7 @@ void dng_negative::AddProfile (AutoPtr<dng_camera_profile> &profile)
 
 			delete fCameraProfile [0];
 
-			fCameraProfile [0] = NULL;
+			fCameraProfile [0] = nullptr;
 
 			fCameraProfile.erase (fCameraProfile.begin ());
 
@@ -1154,7 +1154,7 @@ void dng_negative::AddProfile (AutoPtr<dng_camera_profile> &profile)
 
 			delete fCameraProfile [index];
 
-			fCameraProfile [index] = NULL;
+			fCameraProfile [index] = nullptr;
 
 			fCameraProfile.erase (fCameraProfile.begin () + index);
 
@@ -1166,7 +1166,7 @@ void dng_negative::AddProfile (AutoPtr<dng_camera_profile> &profile)
 
 	// Now add to profile list.
 
-	fCameraProfile.push_back (NULL);
+	fCameraProfile.push_back (nullptr);
 
 	fCameraProfile [fCameraProfile.size () - 1] = profile.Release ();
 
@@ -1187,7 +1187,7 @@ void dng_negative::ClearProfiles ()
 
 			delete fCameraProfile [index];
 
-			fCameraProfile [index] = NULL;
+			fCameraProfile [index] = nullptr;
 
 			}
 
@@ -1223,7 +1223,7 @@ void dng_negative::ClearProfiles (bool clearBuiltinMatrixProfiles,
 
 		dng_camera_profile *profile = *iter;
 
-		// If the profile is invalid (i.e., NULL pointer), or meets one of the
+		// If the profile is invalid (i.e., nullptr pointer), or meets one of the
 		// specified criteria, then axe it.
 
 		if (!profile ||
@@ -1286,7 +1286,7 @@ const dng_camera_profile * dng_negative::ProfileByID (const dng_camera_profile_i
 
 	if (profileCount == 0)
 		{
-		return NULL;
+		return nullptr;
 		}
 
 	// If we have both a profile name and fingerprint, try matching both.
@@ -1415,7 +1415,7 @@ const dng_camera_profile * dng_negative::ProfileByID (const dng_camera_profile_i
 
 	// Found nothing.
 
-	return NULL;
+	return nullptr;
 
 	}
 
@@ -1432,7 +1432,7 @@ const dng_camera_profile * dng_negative::ComputeCameraProfileToEmbed
 	if (count == 0)
 		{
 
-		return NULL;
+		return nullptr;
 
 		}
 
@@ -1504,7 +1504,7 @@ dng_fingerprint dng_negative::FindImageDigest (dng_host &host,
 							 image.Planes (),
 							 image.PixelType (),
 							 pcInterleaved,
-							 NULL);
+							 nullptr);
 
 	// Sometimes we expand 8-bit data to 16-bit data while reading or
 	// writing, so always compute the digest of 8-bit data as 16-bits.
@@ -1671,7 +1671,7 @@ class dng_find_new_raw_image_digest_task : public dng_area_task
 			,	fTilesAcross (0)
 			,	fTilesDown   (0)
 			,	fTileCount   (0)
-			,	fTileHash    (NULL)
+			,	fTileHash    (nullptr)
 
 			{
 
@@ -1872,7 +1872,7 @@ void dng_negative::FindNewRawImageDigest (dng_host &host) const
 		// If there is a transparancy mask, we need to include that in the
 		// digest also.
 
-		if (RawTransparencyMask () != NULL)
+		if (RawTransparencyMask () != nullptr)
 			{
 
 			// Find the fast digest on the raw mask.
@@ -3828,8 +3828,8 @@ void dng_negative::ReadVc5Image (dng_host &host,
                         rawIFD,
                         stream,
                         *fRawImage.Get (),
-                        NULL,
-                        NULL);
+                        nullptr,
+                        nullptr);
 
 	}
 #endif
@@ -3937,7 +3937,7 @@ void dng_negative::ReadStage1Image (dng_host &host,
 	bool needJPEGDigest = (RawImageDigest    ().IsValid () ||
 						   NewRawImageDigest ().IsValid ()) &&
 						  rawIFD.fCompression == ccLossyJPEG &&
-						  jpegImage.Get () == NULL;
+						  jpegImage.Get () == nullptr;
 
 	dng_fingerprint jpegDigest;
 
@@ -3947,7 +3947,7 @@ void dng_negative::ReadStage1Image (dng_host &host,
 					  stream,
 					  *fStage1Image.Get (),
 					  jpegImage.Get (),
-					  needJPEGDigest ? &jpegDigest : NULL);
+					  needJPEGDigest ? &jpegDigest : nullptr);
 
 	// Remember the raw floating point bit depth, if reading from
 	// a floating point image.
@@ -4649,7 +4649,7 @@ void dng_negative::BuildStage3Image (dng_host &host,
 
 	// Do the interpolation as required.
 
-	DoBuildStage3 (host, srcPlane, NULL);
+	DoBuildStage3 (host, srcPlane, nullptr);
 
 	// Delete the stage2 image now that we have computed the stage 3 image,
 	// unless the host wants to preserve it.
@@ -5108,7 +5108,7 @@ dng_image * dng_negative::EncodeRawProxy (dng_host &host,
 
 	if (srcImage.PixelType () != ttShort)
 		{
-		return NULL;
+		return nullptr;
 		}
 
 	real64 lower [kMaxColorPlanes];
@@ -5895,7 +5895,7 @@ void dng_negative::SetDepthMap (AutoPtr<dng_image> &depthMap)
 
 	fDepthMap.Reset (depthMap.Release ());
 
-	SetHasDepthMap (fDepthMap.Get () != NULL);
+	SetHasDepthMap (fDepthMap.Get () != nullptr);
 
 	}
 
@@ -5923,7 +5923,7 @@ void dng_negative::ReadDepthMap (dng_host &host,
                             stream,
                             *fDepthMap.Get ());
 
-		SetHasDepthMap (fDepthMap.Get () != NULL);
+		SetHasDepthMap (fDepthMap.Get () != nullptr);
 
         }
 

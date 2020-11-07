@@ -282,7 +282,7 @@ void OptimizeOrder (const void *&sPtr,
 					int32 &sStep2)
 	{
 
-	void *dPtr = NULL;
+	void *dPtr = nullptr;
 
 	int32 dStep0 = sStep0;
 	int32 dStep1 = sStep1;
@@ -316,7 +316,7 @@ void OptimizeOrder (void *&dPtr,
 					int32 &dStep2)
 	{
 
-	const void *sPtr = NULL;
+	const void *sPtr = nullptr;
 
 	int32 sStep0 = dStep0;
 	int32 sStep1 = dStep1;
@@ -350,7 +350,7 @@ dng_pixel_buffer::dng_pixel_buffer ()
 	,	fPlaneStep  (1)
 	,	fPixelType  (ttUndefined)
 	,	fPixelSize  (0)
-	,	fData       (NULL)
+	,	fData       (nullptr)
 	,	fDirty      (true)
 
 	{

@@ -436,7 +436,7 @@ tag_icc_profile::tag_icc_profile (const void *profileData,
 	:	tag_data_ptr (tcICCProfile,
 					  ttUndefined,
 					  0,
-					  NULL)
+					  nullptr)
 
 	{
 
@@ -534,7 +534,7 @@ void tag_iptc::Put (dng_stream &stream) const
 
 tag_xmp::tag_xmp (const dng_xmp *xmp)
 
-	:	tag_uint8_ptr (tcXMP, NULL, 0)
+	:	tag_uint8_ptr (tcXMP, nullptr, 0)
 
 	,	fBuffer ()
 
@@ -1803,7 +1803,7 @@ range_tag_set::range_tag_set (dng_tiff_directory &directory,
 					  0)
 
 	,	fLinearizationTable (tcLinearizationTable,
-							 NULL,
+							 nullptr,
 							 0)
 
 	,	fBlackLevelRepeatDim (tcBlackLevelRepeatDim,
@@ -2444,7 +2444,7 @@ profile_tag_set::profile_tag_set (dng_tiff_directory &directory,
 	,	fToneCurveTag (tcProfileToneCurve,
 					   ttFloat,
 					   0,
-					   NULL)
+					   nullptr)
 
 	{
 
@@ -3414,8 +3414,8 @@ class dng_lzw_compressor: private dng_uncopyable
 dng_lzw_compressor::dng_lzw_compressor ()
 
 	:	fBuffer    ()
-	,	fTable     (NULL)
-	,	fDstPtr    (NULL)
+	,	fTable     (nullptr)
+	,	fDstPtr    (nullptr)
 	,	fBitOffset (0)
 	,	fNextCode  (0)
 	,	fCodeSize  (0)
@@ -4192,7 +4192,7 @@ void dng_image_writer::EncodeJPEGPreview (dng_host &host,
 								 image.Planes (),
 								 ttByte,
 								 pcInterleaved,
-								 NULL);
+								 nullptr);
 
 		AutoPtr<dng_memory_block> bufferData (host.Allocate (buffer.fRowStep));
 
@@ -4893,7 +4893,7 @@ static void CopyString (const dng_xmp &oldXMP,
 						dng_xmp &newXMP,
 						const char *ns,
 						const char *path,
-						dng_string *exif = NULL)
+						dng_string *exif = nullptr)
 	{
 
 	dng_string s;
@@ -4950,7 +4950,7 @@ static void CopyAltLangDefault (const dng_xmp &oldXMP,
 								dng_xmp &newXMP,
 								const char *ns,
 								const char *path,
-								dng_string *exif = NULL)
+								dng_string *exif = nullptr)
 	{
 
 	dng_string s;
@@ -5101,7 +5101,7 @@ void dng_image_writer::CleanUpMetadata (dng_host &host,
 			// For these options, we start from nothing, and only fill in the
 			// fields that we absolutely need.
 
-			newXMP.RemoveProperties (NULL);
+			newXMP.RemoveProperties (nullptr);
 
 			newEXIF.SetEmpty ();
 
@@ -5464,7 +5464,7 @@ void dng_image_writer::WriteTIFF (dng_host &host,
 			   image,
 			   photometricInterpretation,
 			   compression,
-			   negative ? &(negative->Metadata ()) : NULL,
+			   negative ? &(negative->Metadata ()) : nullptr,
 			   space,
 			   resolution,
 			   thumbnail,
@@ -5490,10 +5490,10 @@ void dng_image_writer::WriteTIFF (dng_host &host,
                                   bool hasTransparency)
 	{
 
-	const void *profileData = NULL;
+	const void *profileData = nullptr;
 	uint32 profileSize = 0;
 
-	const uint8 *data = NULL;
+	const uint8 *data = nullptr;
 	uint32 size = 0;
 
 	if (space && space->ICCProfile (size, data))
@@ -5542,7 +5542,7 @@ void dng_image_writer::WriteTIFFWithProfile (dng_host &host,
 						  image,
 						  photometricInterpretation,
 						  compression,
-						  negative ? &(negative->Metadata ()) : NULL,
+						  negative ? &(negative->Metadata ()) : nullptr,
 						  profileData,
 						  profileSize,
 						  resolution,
@@ -5709,7 +5709,7 @@ void dng_image_writer::WriteTIFFWithProfile (dng_host &host,
 
 	// XMP metadata.
 
-	tag_xmp tagXMP (metadata.Get () ? metadata->GetXMP () : NULL);
+	tag_xmp tagXMP (metadata.Get () ? metadata->GetXMP () : nullptr);
 
 	if (tagXMP.Count ())
 		{
@@ -5718,7 +5718,7 @@ void dng_image_writer::WriteTIFFWithProfile (dng_host &host,
 
 	// IPTC metadata.
 
-	tag_iptc tagIPTC (metadata.Get () ? metadata->IPTCData   () : NULL,
+	tag_iptc tagIPTC (metadata.Get () ? metadata->IPTCData   () : nullptr,
 					  metadata.Get () ? metadata->IPTCLength () : 0);
 
 	if (tagIPTC.Count ())
@@ -5748,7 +5748,7 @@ void dng_image_writer::WriteTIFFWithProfile (dng_host &host,
 						  metadata.Get () && metadata->GetExif () ? *metadata->GetExif ()
 																  : dng_exif (),
 						  metadata.Get () ? metadata->IsMakerNoteSafe () : false,
-						  metadata.Get () ? metadata->MakerNoteData   () : NULL,
+						  metadata.Get () ? metadata->MakerNoteData   () : nullptr,
 						  metadata.Get () ? metadata->MakerNoteLength () : 0,
 						  false);
 
@@ -5876,7 +5876,7 @@ void dng_image_writer::WriteDNGWithMetadata (dng_host &host,
 		if (rawJPEGImage || negative.RawJPEGImageDigest ().IsValid ())
 			{
 
-			rawJPEGImage = NULL;
+			rawJPEGImage = nullptr;
 
 			negative.ClearRawJPEGImageDigest ();
 
@@ -5951,11 +5951,11 @@ void dng_image_writer::WriteDNGWithMetadata (dng_host &host,
 
 	// Does this image have a transparency mask?
 
-	bool hasTransparencyMask = (negative.RawTransparencyMask () != NULL);
+	bool hasTransparencyMask = (negative.RawTransparencyMask () != nullptr);
 
     // Does the image have depth mask?
 
-    bool hasDepthMap = (negative.RawDepthMap () != NULL);
+    bool hasDepthMap = (negative.RawDepthMap () != nullptr);
 
     // Should we save the enhanced stage 3 image?
 
@@ -6019,7 +6019,7 @@ void dng_image_writer::WriteDNGWithMetadata (dng_host &host,
 
 	// Find best thumbnail from preview list, if any.
 
-	const dng_preview *thumbnail = NULL;
+	const dng_preview *thumbnail = nullptr;
 
 	if (previewList)
 		{
@@ -6430,7 +6430,7 @@ void dng_image_writer::WriteDNGWithMetadata (dng_host &host,
 	tag_data_ptr tagJPEGTables (tcJPEGTables,
 								ttUndefined,
 								0,
-								NULL);
+								nullptr);
 
 	if (rawJPEGImage && rawJPEGImage->fJPEGTables.Get ())
 		{
@@ -6879,7 +6879,7 @@ void dng_image_writer::WriteDNGWithMetadata (dng_host &host,
 	tag_data_ptr tagOpcodeList1 (tcOpcodeList1,
 								 ttUndefined,
 								 opcodeList1Data.Get () ? opcodeList1Data->LogicalSize () : 0,
-								 opcodeList1Data.Get () ? opcodeList1Data->Buffer      () : NULL);
+								 opcodeList1Data.Get () ? opcodeList1Data->Buffer      () : nullptr);
 
 	if (opcodeList1Data.Get ())
 		{
@@ -6895,7 +6895,7 @@ void dng_image_writer::WriteDNGWithMetadata (dng_host &host,
 	tag_data_ptr tagOpcodeList2 (tcOpcodeList2,
 								 ttUndefined,
 								 opcodeList2Data.Get () ? opcodeList2Data->LogicalSize () : 0,
-								 opcodeList2Data.Get () ? opcodeList2Data->Buffer      () : NULL);
+								 opcodeList2Data.Get () ? opcodeList2Data->Buffer      () : nullptr);
 
 	if (opcodeList2Data.Get ())
 		{
@@ -6911,7 +6911,7 @@ void dng_image_writer::WriteDNGWithMetadata (dng_host &host,
 	tag_data_ptr tagOpcodeList3 (tcOpcodeList3,
 								 ttUndefined,
 								 opcodeList3Data.Get () ? opcodeList3Data->LogicalSize () : 0,
-								 opcodeList3Data.Get () ? opcodeList3Data->Buffer      () : NULL);
+								 opcodeList3Data.Get () ? opcodeList3Data->Buffer      () : nullptr);
 
 	if (opcodeList3Data.Get ())
 		{

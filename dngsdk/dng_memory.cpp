@@ -23,7 +23,7 @@
 
 dng_memory_data::dng_memory_data ()
 
-	:	fBuffer (NULL)
+	:	fBuffer (nullptr)
 
 	{
 
@@ -33,7 +33,7 @@ dng_memory_data::dng_memory_data ()
 
 dng_memory_data::dng_memory_data (uint32 size)
 
-	:	fBuffer (NULL)
+	:	fBuffer (nullptr)
 
 	{
 
@@ -45,7 +45,7 @@ dng_memory_data::dng_memory_data (uint32 size)
 
 dng_memory_data::dng_memory_data (const dng_safe_uint32 &size)
 
-	:	fBuffer (NULL)
+	:	fBuffer (nullptr)
 
 	{
 
@@ -58,7 +58,7 @@ dng_memory_data::dng_memory_data (const dng_safe_uint32 &size)
 dng_memory_data::dng_memory_data (uint32 count,
 								  std::size_t elementSize)
 
-	:	fBuffer (NULL)
+	:	fBuffer (nullptr)
 
 	{
 
@@ -158,7 +158,7 @@ void dng_memory_data::Clear ()
 		free (fBuffer);
 #endif
 
-		fBuffer = NULL;
+		fBuffer = nullptr;
 
 		}
 
@@ -185,7 +185,7 @@ dng_malloc_block::dng_malloc_block (uint32 logicalSize)
 
 	:	dng_memory_block (logicalSize)
 
-	,	fMalloc (NULL)
+	,	fMalloc (nullptr)
 
 	{
 
@@ -217,7 +217,7 @@ dng_malloc_block::dng_malloc_block (uint32 logicalSize)
 
 	#else
 
-	//fMalloc = (char *) VirtualAlloc (NULL, PhysicalSize (), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+	//fMalloc = (char *) VirtualAlloc (nullptr, PhysicalSize (), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 	//printf("Calling malloc from %s\n", __FUNCTION__);
 #if GPR_WRITING || GPR_READING
 	fMalloc = (char *)gpr_global_malloc(PhysicalSize ());

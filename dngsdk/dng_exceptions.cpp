@@ -28,7 +28,7 @@ void ReportWarning (const char *message,
 
     #ifdef cr_logw
 
-    cr_logs("report", 2, NULL, 0, cr_logfunc(), "%s %s\n", message, sub_message ? sub_message : "");
+    cr_logs("report", 2, nullptr, 0, cr_logfunc(), "%s %s\n", message, sub_message ? sub_message : "");
 
     #else
 
@@ -58,7 +58,7 @@ void ReportError (const char *message,
 
     #ifdef cr_loge
 
-    cr_logs("report", 3, NULL, 0, cr_logfunc(), "%s %s\n", message, sub_message ? sub_message : "");
+    cr_logs("report", 3, nullptr, 0, cr_logfunc(), "%s %s\n", message, sub_message ? sub_message : "");
 
     #else
 

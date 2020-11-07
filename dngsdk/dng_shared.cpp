@@ -699,7 +699,7 @@ bool dng_camera_profile_info::ParseTag (dng_stream &stream,
 			if (gVerbose)
 				{
 
-				const char *encoding = NULL;
+				const char *encoding = nullptr;
 
 				switch (fHueSatMapEncoding)
 					{
@@ -831,7 +831,7 @@ bool dng_camera_profile_info::ParseTag (dng_stream &stream,
 			if (gVerbose)
 				{
 
-				const char *encoding = NULL;
+				const char *encoding = nullptr;
 
 				switch (fLookTableEncoding)
 					{
@@ -898,7 +898,7 @@ bool dng_camera_profile_info::ParseTag (dng_stream &stream,
 			if (gVerbose)
 				{
 
-				const char *setting = NULL;
+				const char *setting = nullptr;
 
 				switch (fDefaultBlackRender)
 					{

@@ -243,7 +243,7 @@ bool dng_color_space::ICCProfile (uint32 &size,
 	{
 
 	size = 0;
-	data = NULL;
+	data = nullptr;
 
 	return false;
 

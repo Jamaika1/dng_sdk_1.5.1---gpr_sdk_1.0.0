@@ -1515,8 +1515,8 @@ void RefBaselineHueSatMap (const real32 *sPtrR,
 	int32 maxSatIndex0 = (int32) satDivisions - 2;
 	int32 maxValIndex0 = (int32) valDivisions - 2;
 
-	const bool hasEncodeTable = ((encodeTable != NULL) && (encodeTable->Table () != NULL));
-	const bool hasDecodeTable = ((decodeTable != NULL) && (decodeTable->Table () != NULL));
+	const bool hasEncodeTable = ((encodeTable != nullptr) && (encodeTable->Table () != nullptr));
+	const bool hasDecodeTable = ((decodeTable != nullptr) && (decodeTable->Table () != nullptr));
 
 	const bool hasTable = hasEncodeTable && hasDecodeTable;
 

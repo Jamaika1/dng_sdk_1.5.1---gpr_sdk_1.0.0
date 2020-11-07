@@ -20,7 +20,7 @@
 
 dng_ref_counted_block::dng_ref_counted_block ()
 
-	:	fBuffer (NULL)
+	:	fBuffer (nullptr)
 
 	{
 
@@ -30,7 +30,7 @@ dng_ref_counted_block::dng_ref_counted_block ()
 
 dng_ref_counted_block::dng_ref_counted_block (uint32 size)
 
-	:	fBuffer (NULL)
+	:	fBuffer (nullptr)
 
 	{
 
@@ -110,7 +110,7 @@ void dng_ref_counted_block::Clear ()
 
 			}
 
-		fBuffer = NULL;
+		fBuffer = nullptr;
 
 		}
 
@@ -120,7 +120,7 @@ void dng_ref_counted_block::Clear ()
 
 dng_ref_counted_block::dng_ref_counted_block (const dng_ref_counted_block &data)
 
-	:   fBuffer (NULL)
+	:   fBuffer (nullptr)
 
 	{
 
@@ -185,7 +185,7 @@ void dng_ref_counted_block::EnsureWriteable ()
 			if (possiblySharedHeader->fRefCount > 1)
 				{
 
-				fBuffer = NULL;
+				fBuffer = nullptr;
 
 				Allocate ((uint32)possiblySharedHeader->fSize);
 

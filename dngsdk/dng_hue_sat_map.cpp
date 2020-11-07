@@ -146,7 +146,7 @@ void dng_hue_sat_map::GetDelta (uint32 hueDiv,
 	if (hueDiv >= fHueDivisions ||
 		satDiv >= fSatDivisions ||
 		valDiv >= fValDivisions ||
-		fDeltas.Buffer () == NULL)
+		fDeltas.Buffer () == nullptr)
 		{
 
 		DNG_REPORT ("Bad parameters to dng_hue_sat_map::GetDelta");
@@ -178,7 +178,7 @@ void dng_hue_sat_map::SetDeltaKnownWriteable (uint32 hueDiv,
 	if (hueDiv >= fHueDivisions ||
 		satDiv >= fSatDivisions ||
 		valDiv >= fValDivisions ||
-		fDeltas.Buffer () == NULL)
+		fDeltas.Buffer () == nullptr)
 		{
 
 		DNG_REPORT ("Bad parameters to dng_hue_sat_map::SetDelta");
