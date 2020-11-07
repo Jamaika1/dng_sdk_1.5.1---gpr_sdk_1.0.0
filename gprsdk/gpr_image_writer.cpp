@@ -42,12 +42,12 @@ gpr_image_writer::gpr_image_writer(const gpr_buffer_auto* raw_buffer,
                                                 _vc5_buffer(vc5_buffer),
                                                 _raw_buffer(raw_buffer)
 {
-    if( _vc5_buffer == NULL )
+    if( _vc5_buffer == nullptr )
     {
         _vc5_buffer = &_vc5_buffer_obj;
     }
 
-    _rgb_thumbnail.buffer = NULL;
+    _rgb_thumbnail.buffer = nullptr;
     _rgb_thumbnail.size = 0;
 
     vc5_encoder_parameters_set_default(&vc5_encoder_params);
@@ -60,7 +60,7 @@ gpr_image_writer::~gpr_image_writer()
         assert( _rgb_thumbnail.size > 0 );
 
         _raw_buffer->get_free()(_rgb_thumbnail.buffer);
-        _rgb_thumbnail.buffer = NULL;
+        _rgb_thumbnail.buffer = nullptr;
         _rgb_thumbnail.size = 0;
     }
 }

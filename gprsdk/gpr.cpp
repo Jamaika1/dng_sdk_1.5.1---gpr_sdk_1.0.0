@@ -205,7 +205,7 @@ void gpr_parameters_construct_copy(const gpr_parameters* y, gpr_parameters* x, g
 
     *x = *y;
 
-    if( y->gpmf_payload.size > 0 && y->gpmf_payload.buffer != NULL )
+    if( y->gpmf_payload.size > 0 && y->gpmf_payload.buffer != nullptr )
     {
         x->gpmf_payload.buffer = mem_alloc( y->gpmf_payload.size );
         memcpy( x->gpmf_payload.buffer, y->gpmf_payload.buffer, y->gpmf_payload.size );
@@ -548,8 +548,8 @@ static bool read_dng(const gpr_allocator*       allocator,
                            dng_stream*          dng_read_stream,
                            gpr_buffer_auto*     raw_image_buffer,
                            gpr_buffer_auto*     vc5_image_buffer,
-                           gpr_parameters*      convert_params = NULL,
-                           bool*                is_vc5_format = NULL )
+                           gpr_parameters*      convert_params = nullptr,
+                           bool*                is_vc5_format = nullptr )
 {
     dng_host host;
 
@@ -575,7 +575,7 @@ static bool read_dng(const gpr_allocator*       allocator,
 
     AutoPtr<dng_negative> negative;
 
-    if( raw_image_buffer != NULL && vc5_image_buffer == NULL )
+    if( raw_image_buffer != nullptr && vc5_image_buffer == nullptr )
     {
         vc5_image_buffer = &vc5_image_obj;
     }
@@ -596,7 +596,7 @@ static bool read_dng(const gpr_allocator*       allocator,
 
         if( gpmf_payload && gpmf_payload->LogicalSize() > 0 )
         {
-            if( convert_params != NULL && convert_params->gpmf_payload.buffer == NULL && convert_params->gpmf_payload.size == 0 )
+            if( convert_params != nullptr && convert_params->gpmf_payload.buffer == nullptr && convert_params->gpmf_payload.size == 0 )
             {
                 convert_params->gpmf_payload.size   = gpmf_payload->LogicalSize();
                 convert_params->gpmf_payload.buffer = allocator->Alloc( convert_params->gpmf_payload.size );
@@ -616,12 +616,12 @@ static bool read_dng(const gpr_allocator*       allocator,
         {
             gpr_read_image reader( vc5_image_buffer );
 
-            if( vc5_image_buffer == NULL )
+            if( vc5_image_buffer == nullptr )
             {
                 reader.SetReadVC5(false);
             }
 
-            if( raw_image_buffer == NULL )
+            if( raw_image_buffer == nullptr )
             {
                 reader.SetDecodeVC5(false);
             }
@@ -823,7 +823,7 @@ static bool read_dng(const gpr_allocator*       allocator,
                         if( i == 0 )
                             tuning_info.gain_map.size = stream.Position();
 
-                        assert( tuning_info.gain_map.buffers[i] == NULL );
+                        assert( tuning_info.gain_map.buffers[i] == nullptr );
 
                         tuning_info.gain_map.buffers[i] = (char*)allocator->Alloc( tuning_info.gain_map.size );
                         memcpy( tuning_info.gain_map.buffers[i], gainmap_buffer[i], tuning_info.gain_map.size );
@@ -1052,7 +1052,7 @@ static void write_dng(const gpr_allocator*          allocator,
 
     gpr_buffer_auto raw_allocated_buffer( allocator->Alloc, allocator->Free );
 
-    if( raw_image_buffer == NULL && vc5_image_buffer )
+    if( raw_image_buffer == nullptr && vc5_image_buffer )
     {
 #if GPR_READING
         vc5_decoder_parameters vc5_decoder_params;
@@ -1096,7 +1096,7 @@ static void write_dng(const gpr_allocator*          allocator,
         gpr_buffer vc5_image = { vc5_image_buffer->get_buffer(), vc5_image_buffer->get_size() };
         gpr_buffer raw_image = { raw_allocated_buffer.get_buffer(), raw_allocated_buffer.get_size()  };
 
-        if( vc5_decoder_process( &vc5_decoder_params, &vc5_image, &raw_image, NULL ) != CODEC_ERROR_OKAY )
+        if( vc5_decoder_process( &vc5_decoder_params, &vc5_image, &raw_image, nullptr ) != CODEC_ERROR_OKAY )
         {
             assert(0);
         }
@@ -1374,7 +1374,7 @@ static void write_dng(const gpr_allocator*          allocator,
         negative->UpdateDateTime(date_time_original);
     }
 
-    if( convert_params->gpmf_payload.buffer != NULL && convert_params->gpmf_payload.size > 0 )
+    if( convert_params->gpmf_payload.buffer != nullptr && convert_params->gpmf_payload.size > 0 )
     { // Set GPMF Data
         dng_string gopro_tag;
         gopro_tag.Append("GoPro\n");
@@ -1393,9 +1393,9 @@ static void write_dng(const gpr_allocator*          allocator,
 
     negative->SetStage1Image(image);
 
-    dng_preview_list* preview_list = NULL;
+    dng_preview_list* preview_list = nullptr;
 
-    dng_image_writer* writer = NULL;
+    dng_image_writer* writer = nullptr;
 
 #if GPR_WRITING
     if( vc5_dng )
@@ -1409,7 +1409,7 @@ static void write_dng(const gpr_allocator*          allocator,
         {
             const gpr_preview_image& preview_image = convert_params->preview_image;
 
-            if( preview_image.jpg_preview.size > 0 && preview_image.jpg_preview.buffer != NULL )
+            if( preview_image.jpg_preview.size > 0 && preview_image.jpg_preview.buffer != nullptr )
             {
                 preview_list = new dng_preview_list;
 
@@ -1508,7 +1508,7 @@ bool gpr_parse_metadata(const gpr_allocator*        allocator,
     inp_dng_stream.Put( inp_dng_buffer->buffer, inp_dng_buffer->size );
     inp_dng_stream.SetReadPosition(0);
 
-    if( read_dng( allocator, &inp_dng_stream, NULL, NULL, parameters ) == false )
+    if( read_dng( allocator, &inp_dng_stream, nullptr, nullptr, parameters ) == false )
     {
         assert(0); return false;
     }
@@ -1528,7 +1528,7 @@ bool gpr_convert_raw_to_dng(const gpr_allocator*    allocator,
 
     dng_memory_stream out_dng_stream( gDefaultDNGMemoryAllocator );
 
-    write_dng( allocator, &out_dng_stream, &raw_buffer, false, NULL, parameters );
+    write_dng( allocator, &out_dng_stream, &raw_buffer, false, nullptr, parameters );
 
     write_dngstream_to_buffer( &out_dng_stream, out_dng_buffer, allocator->Alloc, allocator->Free );
 
@@ -1549,7 +1549,7 @@ bool gpr_convert_dng_to_raw(const gpr_allocator*    allocator,
     inp_dng_stream.Put( inp_dng_buffer->buffer, inp_dng_buffer->size );
     inp_dng_stream.SetReadPosition(0);
 
-    if( read_dng( allocator, &inp_dng_stream, &raw_buffer, NULL ) == false )
+    if( read_dng( allocator, &inp_dng_stream, &raw_buffer, nullptr ) == false )
     {
         assert(0); return false;
     }
@@ -1578,14 +1578,14 @@ bool gpr_convert_dng_to_dng(const gpr_allocator*    allocator,
     inp_dng_stream.Put( inp_dng_buffer->buffer, inp_dng_buffer->size );
     inp_dng_stream.SetReadPosition(0);
 
-    if( read_dng( allocator, &inp_dng_stream, &raw_buffer, NULL ) == false )
+    if( read_dng( allocator, &inp_dng_stream, &raw_buffer, nullptr ) == false )
     {
         assert(0); return false;
     }
 
     dng_memory_stream out_dng_stream( gDefaultDNGMemoryAllocator );
 
-    write_dng( allocator, &out_dng_stream, &raw_buffer, false, NULL, parameters );
+    write_dng( allocator, &out_dng_stream, &raw_buffer, false, nullptr, parameters );
 
     write_dngstream_to_buffer( &out_dng_stream, out_dng_buffer, allocator->Alloc, allocator->Free );
 
@@ -1606,7 +1606,7 @@ bool gpr_convert_vc5_to_gpr(const gpr_allocator*    allocator,
 
     dng_memory_stream out_gpr_stream( gDefaultDNGMemoryAllocator );
 
-    write_dng( allocator, &out_gpr_stream, NULL, false, &vc5_buffer, parameters );
+    write_dng( allocator, &out_gpr_stream, nullptr, false, &vc5_buffer, parameters );
 
     write_dngstream_to_buffer( &out_gpr_stream, out_gpr_buffer, allocator->Alloc, allocator->Free );
 
@@ -1627,7 +1627,7 @@ bool gpr_convert_gpr_to_vc5(const gpr_allocator*            allocator,
     inp_gpr_stream.Put( inp_gpr_buffer->buffer, inp_gpr_buffer->size );
     inp_gpr_stream.SetReadPosition(0);
 
-    if( read_dng( allocator, &inp_gpr_stream, NULL, &vc5_buffer ) == false )
+    if( read_dng( allocator, &inp_gpr_stream, nullptr, &vc5_buffer ) == false )
     {
         assert(0); return false;
     }
@@ -1661,7 +1661,7 @@ bool gpr_convert_raw_to_gpr(const gpr_allocator*    allocator,
 
     dng_memory_stream out_gpr_stream( gDefaultDNGMemoryAllocator );
 
-    write_dng( allocator, &out_gpr_stream, &raw_buffer, true, NULL, parameters );
+    write_dng( allocator, &out_gpr_stream, &raw_buffer, true, nullptr, parameters );
 
     write_dngstream_to_buffer( &out_gpr_stream, out_gpr_buffer, allocator->Alloc, allocator->Free );
 
@@ -1683,14 +1683,14 @@ bool gpr_convert_dng_to_gpr(const gpr_allocator*    allocator,
     inp_dng_stream.Put( inp_dng_buffer->buffer, inp_dng_buffer->size );
     inp_dng_stream.SetReadPosition(0);
 
-    if( read_dng( allocator, &inp_dng_stream, &raw_buffer, NULL, NULL ) == false )
+    if( read_dng( allocator, &inp_dng_stream, &raw_buffer, nullptr, nullptr ) == false )
     {
         assert(0); return false;
     }
 
     dng_memory_stream out_gpr_stream( gDefaultDNGMemoryAllocator );
 
-    write_dng( allocator, &out_gpr_stream, &raw_buffer, true, NULL, parameters );
+    write_dng( allocator, &out_gpr_stream, &raw_buffer, true, nullptr, parameters );
 
     write_dngstream_to_buffer( &out_gpr_stream, out_gpr_buffer, allocator->Alloc, allocator->Free );
 
@@ -1712,7 +1712,7 @@ bool gpr_convert_dng_to_vc5(const gpr_allocator*    allocator,
     inp_dng_stream.Put( inp_dng_buffer->buffer, inp_dng_buffer->size );
     inp_dng_stream.SetReadPosition(0);
 
-    if( read_dng( allocator, &inp_dng_stream, &raw_buffer, NULL ) == false )
+    if( read_dng( allocator, &inp_dng_stream, &raw_buffer, nullptr ) == false )
     {
         assert(0); return false;
     }
@@ -1747,7 +1747,7 @@ bool gpr_convert_gpr_to_rgb(const gpr_allocator*        allocator,
     inp_gpr_stream.Put( inp_gpr_buffer->buffer, inp_gpr_buffer->size );
     inp_gpr_stream.SetReadPosition(0);
 
-    if( read_dng( allocator, &inp_gpr_stream, NULL, &vc5_buffer, &params ) == false )
+    if( read_dng( allocator, &inp_gpr_stream, nullptr, &vc5_buffer, &params ) == false )
     {
         assert(0); return false;
     }
@@ -1775,7 +1775,7 @@ bool gpr_convert_gpr_to_rgb(const gpr_allocator*        allocator,
 
     vc5_decoder_params.rgb_resolution = rgb_resolution;
 
-    if( vc5_decoder_process( &vc5_decoder_params, &vc5_buffer.get_gpr_buffer(), NULL, out_rgb_buffer ) != CODEC_ERROR_OKAY )
+    if( vc5_decoder_process( &vc5_decoder_params, &vc5_buffer.get_gpr_buffer(), nullptr, out_rgb_buffer ) != CODEC_ERROR_OKAY )
     {
         assert(0);
     }
@@ -1799,14 +1799,14 @@ bool gpr_convert_gpr_to_dng(const gpr_allocator*    allocator,
     inp_gpr_stream.Put( inp_gpr_buffer->buffer, inp_gpr_buffer->size );
     inp_gpr_stream.SetReadPosition(0);
 
-    if( read_dng( allocator, &inp_gpr_stream, &raw_buffer, &vc5_buffer, NULL ) == false )
+    if( read_dng( allocator, &inp_gpr_stream, &raw_buffer, &vc5_buffer, nullptr ) == false )
     {
         assert(0); return false;
     }
 
     dng_memory_stream out_dng_stream( gDefaultDNGMemoryAllocator );
 
-    write_dng( allocator, &out_dng_stream, &raw_buffer, false, NULL, parameters );
+    write_dng( allocator, &out_dng_stream, &raw_buffer, false, nullptr, parameters );
 
     write_dngstream_to_buffer( &out_dng_stream, out_dng_buffer, allocator->Alloc, allocator->Free );
 
@@ -1828,7 +1828,7 @@ bool gpr_convert_vc5_to_dng(const gpr_allocator*    allocator,
 
     dng_memory_stream out_dng_stream( gDefaultDNGMemoryAllocator );
 
-    write_dng( allocator, &out_dng_stream, NULL, false, &vc5_buffer, parameters );
+    write_dng( allocator, &out_dng_stream, nullptr, false, &vc5_buffer, parameters );
 
     write_dngstream_to_buffer( &out_dng_stream, out_dng_buffer, allocator->Alloc, allocator->Free );
 
@@ -1849,7 +1849,7 @@ bool gpr_convert_gpr_to_raw(const gpr_allocator*            allocator,
     inp_gpr_stream.Put( inp_gpr_buffer->buffer, inp_gpr_buffer->size );
     inp_gpr_stream.SetReadPosition(0);
 
-    if( read_dng( allocator, &inp_gpr_stream, &raw_buffer, NULL ) == false )
+    if( read_dng( allocator, &inp_gpr_stream, &raw_buffer, nullptr ) == false )
     {
         assert(0); return false;
     }
@@ -1880,7 +1880,7 @@ bool gpr_check_vc5( const gpr_allocator*        allocator,
         inp_dng_stream.Put( inp_dng_buffer->buffer, inp_dng_buffer->size );
         inp_dng_stream.SetReadPosition(0);
 
-        if( read_dng( allocator, &inp_dng_stream, &raw_buffer, &vc5_buffer, NULL, &is_vc5_format ) == false )
+        if( read_dng( allocator, &inp_dng_stream, &raw_buffer, &vc5_buffer, nullptr, &is_vc5_format ) == false )
         {
             assert(0); return -1;
         }

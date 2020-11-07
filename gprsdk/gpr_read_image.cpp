@@ -46,7 +46,7 @@ static bool DecodeVC5(dng_image &image, gpr_buffer_auto& vc5_buffer, VC5_DECODER
     gpr_buffer vc5_image = { vc5_buffer.get_buffer(), vc5_buffer.get_size()  };
     gpr_buffer raw_image = { raw_buffer.get_buffer(), raw_buffer.get_size()  };
 
-    if( vc5_decoder_process( &vc5_decoder_params, &vc5_image, &raw_image, NULL ) != CODEC_ERROR_OKAY )
+    if( vc5_decoder_process( &vc5_decoder_params, &vc5_image, &raw_image, nullptr ) != CODEC_ERROR_OKAY )
     {
         assert(0);
         return false;
@@ -87,7 +87,7 @@ void gpr_read_image::ReadTile (dng_host &host,
 
     if( ifd.fCompression == ccVc5 )
     {
-        if( GetReadVC5() && _vc5_buffer != NULL )
+        if( GetReadVC5() && _vc5_buffer != nullptr )
         {
             _vc5_buffer->allocate( tileByteCount );
 

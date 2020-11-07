@@ -38,7 +38,7 @@ private:
 
 public:
 
-    gpr_read_image( gpr_buffer_auto* vc5_buffer = NULL );
+    gpr_read_image( gpr_buffer_auto* vc5_buffer = nullptr );
 
     void SetReadVC5(bool read_vc5) { fReadVC5 = read_vc5; }
     bool GetReadVC5() { return fReadVC5; }

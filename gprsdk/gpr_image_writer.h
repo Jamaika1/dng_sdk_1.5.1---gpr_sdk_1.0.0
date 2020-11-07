@@ -54,7 +54,7 @@ public:
                          unsigned int raw_buffer_width,
                          unsigned int raw_buffer_height,
                          size_t       raw_buffer_pitch,
-                         gpr_buffer_auto* vc5_buffer = NULL );
+                         gpr_buffer_auto* vc5_buffer = nullptr );
 
     ~gpr_image_writer();
 

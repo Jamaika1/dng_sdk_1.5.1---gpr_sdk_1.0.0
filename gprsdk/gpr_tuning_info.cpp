@@ -40,10 +40,10 @@ static void _gain_map_set_defaults( gpr_tuning_info* tuning_info )
 {
     tuning_info->gain_map.size = 0;
 
-    tuning_info->gain_map.buffers[0] = NULL;
-    tuning_info->gain_map.buffers[1] = NULL;
-    tuning_info->gain_map.buffers[2] = NULL;
-    tuning_info->gain_map.buffers[3] = NULL;
+    tuning_info->gain_map.buffers[0] = nullptr;
+    tuning_info->gain_map.buffers[1] = nullptr;
+    tuning_info->gain_map.buffers[2] = nullptr;
+    tuning_info->gain_map.buffers[3] = nullptr;
 }
 
 int32_t gpr_tuning_info_get_dgain_saturation_level(const gpr_tuning_info* x, GPR_RAW_CHANNEL channel)
