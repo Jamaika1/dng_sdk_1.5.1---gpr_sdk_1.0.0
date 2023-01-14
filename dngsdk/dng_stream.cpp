@@ -2,7 +2,7 @@
 // Copyright 2006-2019 Adobe Systems Incorporated
 // All Rights Reserved.
 //
-// NOTICE:  Adobe permits you to use, modify, and distribute this file in
+// NOTICE:	Adobe permits you to use, modify, and distribute this file in
 // accordance with the terms of the Adobe license agreement accompanying it.
 /*****************************************************************************/
 
@@ -17,6 +17,8 @@
 #include "dng_memory.h"
 #include "dng_tag_types.h"
 #include "dng_assertions.h"
+
+#include "stdc_includes.h"
 
 /*****************************************************************************/
 
@@ -40,9 +42,9 @@ dng_stream::dng_stream (dng_abort_sniffer *sniffer,
 
 	{
 
-    fMemBlock.Reset (gDefaultDNGMemoryAllocator.Allocate (fBufferSize));
+	fMemBlock.Reset (gDefaultDNGMemoryAllocator.Allocate (fBufferSize));
 
-    fBuffer = fMemBlock->Buffer_uint8 ();
+	fBuffer = fMemBlock->Buffer_uint8 ();
 
 	}
 
@@ -140,38 +142,38 @@ void dng_stream::SetBigEndian (bool bigEndian)
 /*****************************************************************************/
 
 void dng_stream::SetBufferSize (dng_memory_allocator &allocator,
-                                uint32 newBufferSize)
-    {
+								uint32 newBufferSize)
+	{
 
-    if (newBufferSize != fBufferSize &&
-        newBufferSize >= gDNGStreamBlockSize * 2 &&
-        !Data () &&
-        !fBufferDirty)
-        {
+	if (newBufferSize != fBufferSize &&
+		newBufferSize >= gDNGStreamBlockSize * 2 &&
+		!Data () &&
+		!fBufferDirty)
+		{
 
-        try
-            {
+		try
+			{
 
-            fMemBlock.Reset (allocator.Allocate (newBufferSize));
+			fMemBlock.Reset (allocator.Allocate (newBufferSize));
 
-            fBuffer = fMemBlock->Buffer_uint8 ();
+			fBuffer = fMemBlock->Buffer_uint8 ();
 
-            fBufferSize  = newBufferSize;
+			fBufferSize	 = newBufferSize;
 
-            fBufferStart = 0;
-            fBufferEnd   = 0;
-            fBufferLimit = newBufferSize;
+			fBufferStart = 0;
+			fBufferEnd	 = 0;
+			fBufferLimit = newBufferSize;
 
-            }
+			}
 
-        catch (...)
-            {
+		catch (...)
+			{
 
-            }
+			}
 
-        }
+		}
 
-    }
+	}
 
 /*****************************************************************************/
 
@@ -271,7 +273,7 @@ void dng_stream::Get (void *data, uint32 count, uint32 maxOverRead)
 			{
 
 			memcpy (data,
-                    fBuffer + (uint32) (fPosition - fBufferStart),
+					fBuffer + (uint32) (fPosition - fBufferStart),
 					count);
 
 			fPosition += count;
@@ -288,7 +290,7 @@ void dng_stream::Get (void *data, uint32 count, uint32 maxOverRead)
 			uint32 block = (uint32) (fBufferEnd - fPosition);
 
 			memcpy (data,
-                    fBuffer + (fPosition - fBufferStart),
+					fBuffer + (fPosition - fBufferStart),
 					block);
 
 			count -= block;
@@ -386,7 +388,7 @@ void dng_stream::Flush ()
 				 fBufferStart);
 
 		fBufferStart = 0;
-		fBufferEnd   = 0;
+		fBufferEnd	 = 0;
 		fBufferLimit = fBufferSize;
 
 		fBufferDirty = false;
@@ -423,14 +425,14 @@ void dng_stream::Put (const void *data,
 
 	uint64 endPosition = fPosition + count;
 
-	if (fBufferDirty                &&
-		fPosition   >= fBufferStart &&
-		fPosition   <= fBufferEnd   &&
+	if (fBufferDirty				&&
+		fPosition	>= fBufferStart &&
+		fPosition	<= fBufferEnd	&&
 		endPosition <= fBufferLimit)
 		{
 
 		memcpy (fBuffer + (uint32) (fPosition - fBufferStart),
-                data,
+				data,
 				count);
 
 		if (fBufferEnd < endPosition)
@@ -443,59 +445,59 @@ void dng_stream::Put (const void *data,
 	else
 		{
 
-        // Write initial part of the data to buffer, if possible.
+		// Write initial part of the data to buffer, if possible.
 
-        if (fBufferDirty &&
-            fPosition >= fBufferStart &&
-            fPosition <= fBufferEnd   &&
-            fPosition <  fBufferLimit)
-            {
+		if (fBufferDirty &&
+			fPosition >= fBufferStart &&
+			fPosition <= fBufferEnd	  &&
+			fPosition <	 fBufferLimit)
+			{
 
-            uint32 subCount = (uint32) (fBufferLimit - fPosition);
+			uint32 subCount = (uint32) (fBufferLimit - fPosition);
 
-            memcpy (fBuffer + (uint32) (fPosition - fBufferStart),
-                    data,
-                    subCount);
+			memcpy (fBuffer + (uint32) (fPosition - fBufferStart),
+					data,
+					subCount);
 
-            count -= subCount;
-            data   = (const void *) (((const uint8 *) data) + subCount);
+			count -= subCount;
+			data   = (const void *) (((const uint8 *) data) + subCount);
 
-            fPosition  = fBufferLimit;
-            fBufferEnd = fBufferLimit;
+			fPosition  = fBufferLimit;
+			fBufferEnd = fBufferLimit;
 
-            }
+			}
 
 		// Write existing buffer.
 
 		Flush ();
 
-        // Figure out how much space we have in buffer from
-        // current position to end of file block.
+		// Figure out how much space we have in buffer from
+		// current position to end of file block.
 
-        uint64 blockRound = gDNGStreamBlockSize - 1;
+		uint64 blockRound = gDNGStreamBlockSize - 1;
 
-        uint64 blockMask = ~((int64) blockRound);
+		uint64 blockMask = ~((int64) blockRound);
 
-        uint32 alignedSize = (uint32)
-                             (((fPosition + fBufferSize) & blockMask) - fPosition);
+		uint32 alignedSize = (uint32)
+							 (((fPosition + fBufferSize) & blockMask) - fPosition);
 
 		// If write request will not fit in buffer, then write everything except
-        // for the final unaligned part of the data.
+		// for the final unaligned part of the data.
 
 		if (count > alignedSize)
 			{
 
-            uint32 alignedCount = (uint32)
-                                  (((fPosition + count) & blockMask) - fPosition);
+			uint32 alignedCount = (uint32)
+								  (((fPosition + count) & blockMask) - fPosition);
 
 			dng_abort_sniffer::SniffForAbort (fSniffer);
 
 			DoWrite (data, alignedCount, fPosition);
 
-            count -= alignedCount;
-            data   = (const void *) (((const uint8 *) data) + alignedCount);
+			count -= alignedCount;
+			data   = (const void *) (((const uint8 *) data) + alignedCount);
 
-            fPosition += alignedCount;
+			fPosition += alignedCount;
 
 			}
 
@@ -507,11 +509,11 @@ void dng_stream::Put (const void *data,
 			fBufferDirty = true;
 
 			fBufferStart = fPosition;
-			fBufferEnd   = endPosition;
+			fBufferEnd	 = endPosition;
 			fBufferLimit = (fBufferStart + fBufferSize) & blockMask;
 
 			memcpy (fBuffer,
-                    data,
+					data,
 					count);
 
 			}
@@ -561,6 +563,7 @@ void dng_stream::Put_uint16 (uint16 x)
 	}
 
 /*****************************************************************************/
+
 uint32 dng_stream::Get_uint32 ()
 	{
 
@@ -897,7 +900,28 @@ uint32 dng_stream::TagValue_uint32 (uint32 tagType)
 	if (x > (real64) 0xFFFFFFFF)
 		x = (real64) 0xFFFFFFFF;
 
-	return (uint32) (x + 0.5);
+	return ConvertDoubleToUint32 (x + 0.5);
+
+	}
+
+/*****************************************************************************/
+
+uint64 dng_stream::TagValue_uint64 (uint32 tagType)
+	{
+
+	switch (tagType)
+		{
+
+		case ttLong8:
+		case ttIFD8:
+			return Get_uint64 ();
+
+		case ttSLong8:
+			return (uint64) Max_int64 (0, Get_int64 ());
+
+		}
+
+	return (uint64) TagValue_uint32 (tagType);
 
 	}
 
@@ -928,7 +952,7 @@ int32 dng_stream::TagValue_int32 (uint32 tagType)
 		if (x < -2147483648.0)
 			x = -2147483648.0;
 
-		return (int32) (x - 0.5);
+		return ConvertDoubleToInt32 (x - 0.5);
 
 		}
 
@@ -938,9 +962,39 @@ int32 dng_stream::TagValue_int32 (uint32 tagType)
 		if (x > 2147483647.0)
 			x = 2147483647.0;
 
-		return (int32) (x + 0.5);
+		return ConvertDoubleToInt32 (x + 0.5);
 
 		}
+
+	}
+
+/*****************************************************************************/
+
+int64 dng_stream::TagValue_int64 (uint32 tagType)
+	{
+
+	switch (tagType)
+		{
+
+		case ttSLong8:
+			return Get_int64 ();
+
+		case ttLong8:
+		case ttIFD8:
+			{
+
+			int64 x = Get_int64 ();
+
+			if (x < 0)
+				x = 0x7FFFFFFFFFFFFFFF;
+
+			return x;
+
+			}
+
+		}
+
+	return (int64) TagValue_int32 (tagType);
 
 	}
 
@@ -1036,7 +1090,7 @@ dng_urational dng_stream::TagValue_urational (uint32 tagType)
 
 					}
 
-				result.n = (uint32) (x + 0.5);
+				result.n = ConvertDoubleToUint32 (x + 0.5);
 
 				}
 
@@ -1088,7 +1142,7 @@ dng_srational dng_stream::TagValue_srational (uint32 tagType)
 
 					}
 
-				result.n = (int32) (x + 0.5);
+				result.n = ConvertDoubleToInt32 (x + 0.5);
 
 				}
 
@@ -1104,7 +1158,7 @@ dng_srational dng_stream::TagValue_srational (uint32 tagType)
 
 					}
 
-				result.n = (int32) (x - 0.5);
+				result.n = ConvertDoubleToInt32 (x - 0.5);
 
 				}
 
@@ -1130,10 +1184,17 @@ real64 dng_stream::TagValue_real64 (uint32 tagType)
 		case ttIFD:
 			return (real64) TagValue_uint32 (tagType);
 
+		case ttLong8:
+		case ttIFD8:
+			return (real64) TagValue_uint64 (tagType);
+
 		case ttSByte:
 		case ttSShort:
 		case ttSLong:
 			return (real64) TagValue_int32 (tagType);
+
+		case ttSLong8:
+			return (real64) TagValue_int64 (tagType);
 
 		case ttRational:
 			{
@@ -1194,7 +1255,7 @@ void dng_stream::CopyToStream (dng_stream &dstStream,
 		{
 
 		const uint32 bigBufferSize = (uint32) Min_uint64 (kBigBufferSize,
-													      count);
+														  count);
 
 		dng_memory_data bigBuffer (bigBufferSize);
 
@@ -1225,7 +1286,7 @@ void dng_stream::DuplicateStream (dng_stream &dstStream)
 
 	// Turn off sniffers for this operation.
 
-	TempStreamSniffer noSniffer1 (*this    , nullptr);
+	TempStreamSniffer noSniffer1 (*this	   , nullptr);
 	TempStreamSniffer noSniffer2 (dstStream, nullptr);
 
 	// First grow the destination stream if required, in an attempt to
@@ -1251,70 +1312,70 @@ void dng_stream::DuplicateStream (dng_stream &dstStream)
 /*****************************************************************************/
 
 dng_stream_contiguous_read_hint::dng_stream_contiguous_read_hint
-                                 (dng_stream &stream,
-                                  dng_memory_allocator &allocator,
-                                  uint64 offset,
-                                  uint64 count)
+								 (dng_stream &stream,
+								  dng_memory_allocator &allocator,
+								  uint64 offset,
+								  uint64 count)
 
-    :   fStream        (stream)
-    ,   fAllocator     (allocator)
-    ,   fOldBufferSize (stream.BufferSize ())
+	:	fStream		   (stream)
+	,	fAllocator	   (allocator)
+	,	fOldBufferSize (stream.BufferSize ())
 
-    {
+	{
 
-    fStream.Flush ();       // Cannot change buffer size with dirty buffer
+	fStream.Flush ();		// Cannot change buffer size with dirty buffer
 
-    // Don't bother changing buffer size if only a small change.
+	// Don't bother changing buffer size if only a small change.
 
-    if (count > fOldBufferSize * 4)
-        {
+	if (count > fOldBufferSize * 4)
+		{
 
-        // Round contiguous size up and down to stream blocks.
+		// Round contiguous size up and down to stream blocks.
 
-        uint64 blockRound = gDNGStreamBlockSize - 1;
+		uint64 blockRound = gDNGStreamBlockSize - 1;
 
-        uint64 blockMask  = ~((int64) blockRound);
+		uint64 blockMask  = ~((int64) blockRound);
 
-        count = (count + (offset & blockRound) + blockRound) & blockMask;
+		count = (count + (offset & blockRound) + blockRound) & blockMask;
 
-        // Limit to maximum buffer size.
+		// Limit to maximum buffer size.
 
-        uint64 newBufferSize = Min_uint64 (gDNGMaxStreamBufferSize, count);
+		uint64 newBufferSize = Min_uint64 (gDNGMaxStreamBufferSize, count);
 
-        // To avoid reading too many bytes with the final read, adjust buffer
-        // size the to make an exact number of buffers fit.
+		// To avoid reading too many bytes with the final read, adjust buffer
+		// size the to make an exact number of buffers fit.
 
-        uint64 numBuffers = (count + newBufferSize - 1) / newBufferSize;
+		uint64 numBuffers = (count + newBufferSize - 1) / newBufferSize;
 
-        newBufferSize = (count + numBuffers - 1) / numBuffers;
+		newBufferSize = (count + numBuffers - 1) / numBuffers;
 
-        // Finally round up to a block size.
+		// Finally round up to a block size.
 
-        newBufferSize = (newBufferSize + blockRound) & blockMask;
+		newBufferSize = (newBufferSize + blockRound) & blockMask;
 
-        // Change the buffer size.
+		// Change the buffer size.
 
-        fStream.SetBufferSize (fAllocator, (uint32) newBufferSize);
+		fStream.SetBufferSize (fAllocator, (uint32) newBufferSize);
 
-        }
+		}
 
-    }
+	}
 
 /*****************************************************************************/
 
 dng_stream_contiguous_read_hint::~dng_stream_contiguous_read_hint ()
-    {
+	{
 
-    fStream.SetBufferSize (fAllocator, fOldBufferSize);
+	fStream.SetBufferSize (fAllocator, fOldBufferSize);
 
-    }
+	}
 
 /*****************************************************************************/
 
 TempBigEndian::TempBigEndian (dng_stream &stream,
-						 	  bool bigEndian)
+							  bool bigEndian)
 
-	:	fStream  (stream)
+	:	fStream	 (stream)
 	,	fOldSwap (stream.SwapBytes ())
 
 	{
@@ -1337,7 +1398,7 @@ TempBigEndian::~TempBigEndian ()
 TempStreamSniffer::TempStreamSniffer (dng_stream &stream,
 									  dng_abort_sniffer *sniffer)
 
-	:	fStream     (stream)
+	:	fStream		(stream)
 	,	fOldSniffer (stream.Sniffer ())
 
 	{

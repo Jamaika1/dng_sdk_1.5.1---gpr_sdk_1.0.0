@@ -2,7 +2,7 @@
 // Copyright 2006-2019 Adobe Systems Incorporated
 // All Rights Reserved.
 //
-// NOTICE:  Adobe permits you to use, modify, and distribute this file in
+// NOTICE:	Adobe permits you to use, modify, and distribute this file in
 // accordance with the terms of the Adobe license agreement accompanying it.
 /*****************************************************************************/
 
@@ -12,9 +12,9 @@
 
 #include "dng_exceptions.h"
 
-#if GPR_WRITING || GPR_READING
 #include "gpr_allocator.h"
-#endif
+
+#include "stdc_includes.h"
 
 /*****************************************************************************/
 
@@ -57,11 +57,7 @@ void dng_ref_counted_block::Allocate (uint32 size)
 	if (size)
 		{
 
-#if GPR_WRITING || GPR_READING
-		fBuffer = gpr_global_malloc (size + sizeof (header));
-#else
-		fBuffer = malloc (size + sizeof (header));
-#endif
+        fBuffer = gpr_global_malloc(size + sizeof (header));
 
 		if (!fBuffer)
 			{
@@ -102,11 +98,7 @@ void dng_ref_counted_block::Clear ()
 
 			blockHeader->~header ();
 
-#if GPR_WRITING || GPR_READING
-			gpr_global_free (fBuffer);
-#else
-			free (fBuffer);
-#endif
+            gpr_global_free( fBuffer );
 
 			}
 
@@ -120,22 +112,22 @@ void dng_ref_counted_block::Clear ()
 
 dng_ref_counted_block::dng_ref_counted_block (const dng_ref_counted_block &data)
 
-	:   fBuffer (nullptr)
+	:	fBuffer (nullptr)
 
 	{
 
 	header *blockHeader = (struct header *) data.fBuffer;
 
-    if (blockHeader)
-        {
+	if (blockHeader)
+		{
 
 		dng_lock_std_mutex lock (blockHeader->fMutex);
 
-        blockHeader->fRefCount++;
+		blockHeader->fRefCount++;
 
-        fBuffer = blockHeader;
+		fBuffer = blockHeader;
 
-        }
+		}
 
 	}
 
@@ -151,16 +143,16 @@ dng_ref_counted_block & dng_ref_counted_block::operator= (const dng_ref_counted_
 
 		header *blockHeader = (struct header *) data.fBuffer;
 
-        if (blockHeader)
-            {
+		if (blockHeader)
+			{
 
-            dng_lock_std_mutex lock (blockHeader->fMutex);
+			dng_lock_std_mutex lock (blockHeader->fMutex);
 
-            blockHeader->fRefCount++;
+			blockHeader->fRefCount++;
 
-            fBuffer = blockHeader;
+			fBuffer = blockHeader;
 
-            }
+			}
 
 		}
 
