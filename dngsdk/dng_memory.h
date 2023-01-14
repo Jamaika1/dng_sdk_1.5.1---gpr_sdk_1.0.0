@@ -2,7 +2,7 @@
 // Copyright 2006-2019 Adobe Systems Incorporated
 // All Rights Reserved.
 //
-// NOTICE:  Adobe permits you to use, modify, and distribute this file in
+// NOTICE:	Adobe permits you to use, modify, and distribute this file in
 // accordance with the terms of the Adobe license agreement accompanying it.
 /*****************************************************************************/
 
@@ -587,7 +587,7 @@ class dng_std_allocator
 
 		typedef T value_type;
 
-		#if defined(_MSC_VER) && _MSC_VER >= 1900
+		#if (defined(_MSC_VER) && _MSC_VER >= 1900) || defined(__GNUG__)
 
 		// Default implementations of default constructor and copy
 		// constructor.

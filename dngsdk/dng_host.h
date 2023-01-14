@@ -2,7 +2,7 @@
 // Copyright 2006-2019 Adobe Systems Incorporated
 // All Rights Reserved.
 //
-// NOTICE:  Adobe permits you to use, modify, and distribute this file in
+// NOTICE:	Adobe permits you to use, modify, and distribute this file in
 // accordance with the terms of the Adobe license agreement accompanying it.
 /*****************************************************************************/
 
@@ -72,7 +72,7 @@ class dng_host: private dng_uncopyable
 
 		uint32 fMinimumSize;
 
-		// What is the preferred size for a preview image?  This can
+		// What is the preferred size for a preview image?	This can
 		// be slightly larger than the minimum size.  Zero if we want
 		// the full resolution image.
 
@@ -83,7 +83,7 @@ class dng_host: private dng_uncopyable
 
 		uint32 fMaximumSize;
 
-		// The fraction of the image kept after a crop.  This is used to
+		// The fraction of the image kept after a crop.	 This is used to
 		// adjust the sizes to take into account the cropping that
 		// will be peformed.
 
@@ -101,6 +101,10 @@ class dng_host: private dng_uncopyable
 
 		bool fKeepOriginalFile;
 
+		// Should we ignore the enhanced IFD when reading DNGs?
+
+		bool fIgnoreEnhanced;
+
 		// Is this host being used to perform a negative read for fast
 		// conversion to DNG?
 
@@ -110,16 +114,12 @@ class dng_host: private dng_uncopyable
 
 		bool fPreserveStage2;
 
-#if GPR_WRITING || GPR_READING
-		// Payload for General Purpose Metadata Format (GPMF)
-		AutoPtr<dng_memory_block> gpmf_payload;
-#endif
+        // Payload for General Purpose Metadata Format (GPMF)
+        AutoPtr<dng_memory_block> gpmf_payload;
 
 	public:
 
-#if GPR_WRITING || GPR_READING
-		AutoPtr<dng_memory_block>& GetGPMFPayload() { return gpmf_payload; };
-#endif
+        AutoPtr<dng_memory_block>& GetGPMFPayload() { return gpmf_payload; };
 
 		/// Allocate a dng_host object, possiblly with custom allocator and sniffer.
 		/// \param allocator Allows controlling all memory allocation done via this
@@ -336,19 +336,33 @@ class dng_host: private dng_uncopyable
 
 		virtual bool SaveLinearDNG (const dng_negative &negative) const;
 
-		/// Setter for flag determining whether to keep original RAW file data.
-		/// \param keep If true, origianl RAW data will be kept.
+		/// Setter for flag determining whether to keep original raw file data.
+		/// \param keep If true, original raw data will be kept.
 
 		void SetKeepOriginalFile (bool keep)
 			{
 			fKeepOriginalFile = keep;
 			}
 
-		/// Getter for flag determining whether to keep original RAW file data.
+		/// Getter for flag determining whether to keep original raw file data.
 
 		bool KeepOriginalFile ()
 			{
 			return fKeepOriginalFile;
+			}
+
+		/// Getter for ignored enhanced IFD flag.
+
+		bool IgnoreEnhanced () const
+			{
+			return fIgnoreEnhanced;
+			}
+
+		/// Setter for ignored enhanced IFD flag.
+
+		void SetIgnoreEnhanced (bool state)
+			{
+			fIgnoreEnhanced = state;
 			}
 
 		/// Determine if an error is the result of a temporary, but planned-for
@@ -370,7 +384,7 @@ class dng_host: private dng_uncopyable
 
 		virtual void PerformAreaTask (dng_area_task &task,
 									  const dng_rect &area,
-                                      dng_area_task_progress *progress = nullptr);
+									  dng_area_task_progress *progress = nullptr);
 
 		/// How many multiprocessing threads does PerformAreaTask use?
 		/// Default implementation always returns 1 since it is single threaded.
@@ -385,7 +399,9 @@ class dng_host: private dng_uncopyable
 		/// Factory method for dng_xmp class. Can be used to customize allocation or
 		/// to ensure a derived class is used instead of dng_xmp.
 
+		#if qDNGUseXMP
 		virtual dng_xmp * Make_dng_xmp ();
+		#endif
 
 		/// Factory method for dng_shared class. Can be used to customize allocation
 		/// or to ensure a derived class is used instead of dng_shared.

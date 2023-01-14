@@ -1,58 +1,27 @@
 /*****************************************************************************/
-// Copyright 2006-2019 Adobe Systems Incorporated
+// Copyright 2021 Adobe Systems Incorporated
 // All Rights Reserved.
 //
 // NOTICE:	Adobe permits you to use, modify, and distribute this file in
 // accordance with the terms of the Adobe license agreement accompanying it.
 /*****************************************************************************/
 
-#ifndef __dng_tag_types__
-#define __dng_tag_types__
+#ifndef __dng_update_meta__
+#define __dng_update_meta__
 
 /*****************************************************************************/
 
-#include "dng_types.h"
+#include "dng_classes.h"
 
 /*****************************************************************************/
 
-enum
-	{
-
-	ttByte = 1,
-	ttAscii,
-	ttShort,
-	ttLong,
-	ttRational,
-	ttSByte,
-	ttUndefined,
-	ttSShort,
-	ttSLong,
-	ttSRational,
-	ttFloat,
-	ttDouble,
-	ttIFD,
-	ttUnicode,
-	ttComplex,
-
-	// Tag types added by BigTIFF:
-
-	ttLong8,
-	ttSLong8,
-	ttIFD8,
-
-	// Note that this is not an offical TIFF tag type, and should
-	// not be used in TIFF/DNG files:
-
-	ttHalfFloat
-
-	};
+void DNGUpdateMetadata (dng_host &host,
+						dng_stream &stream,
+						const dng_negative &negative,
+						const dng_metadata &metadata);
 
 /*****************************************************************************/
 
-uint32 TagTypeSize (uint32 tagType);
-
-/*****************************************************************************/
-
-#endif
+#endif	// __dng_update_meta__
 
 /*****************************************************************************/

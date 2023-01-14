@@ -2,7 +2,7 @@
 // Copyright 2002-2019 Adobe Systems Incorporated
 // All Rights Reserved.
 //
-// NOTICE:  Adobe permits you to use, modify, and distribute this file in
+// NOTICE:	Adobe permits you to use, modify, and distribute this file in
 // accordance with the terms of the Adobe license agreement accompanying it.
 /*****************************************************************************/
 
@@ -39,7 +39,7 @@
 
 #include <stdlib.h>
 
-#if _MSC_VER >= 1600
+#if (defined(_MSC_VER) && _MSC_VER >= 1600) || defined(__GNUG__)
 
 // Get this included so ETIMEDOUT is predefined.
 #include <errno.h>
@@ -53,10 +53,10 @@ extern "C"
 
 /*****************************************************************************/
 
-#define DNG_ETIMEDOUT       60              /* Operation timed out */
+#define DNG_ETIMEDOUT		60				/* Operation timed out */
 
 struct dng_timespec {
-	time_t tv_sec;
+	long tv_sec;
 	long tv_nsec;
 };
 
@@ -161,7 +161,7 @@ void dng_pthread_terminate();
 #undef PTHREAD_ONCE_INIT
 #define PTHREAD_ONCE_INIT DNG_PTHREAD_ONCE_INIT
 
-#if (defined(_MSC_VER) && _MSC_VER < 1900) || !defined(__MINGW32__) || !defined(__MINGW64__)
+#if defined(_MSC_VER) && _MSC_VER < 1900
 #define timespec dng_timespec
 #endif
 
