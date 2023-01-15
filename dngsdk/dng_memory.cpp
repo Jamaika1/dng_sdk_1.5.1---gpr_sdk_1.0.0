@@ -2,7 +2,7 @@
 // Copyright 2006-2019 Adobe Systems Incorporated
 // All Rights Reserved.
 //
-// NOTICE:  Adobe permits you to use, modify, and distribute this file in
+// NOTICE:	Adobe permits you to use, modify, and distribute this file in
 // accordance with the terms of the Adobe license agreement accompanying it.
 /*****************************************************************************/
 
@@ -10,10 +10,9 @@
 
 #include "dng_bottlenecks.h"
 #include "dng_exceptions.h"
+#include "dng_safe_arithmetic.h"
 
-#if GPR_WRITING || GPR_READING
 #include "gpr_allocator.h"
-#endif
 
 #ifdef _MSC_VER
 #include <Windows.h>
@@ -85,11 +84,7 @@ void dng_memory_data::Allocate (uint32 size)
 	if (size)
 		{
 		//printf("Calling malloc from %s\n", __FUNCTION__);
-#if GPR_WRITING || GPR_READING
-		fBuffer = (char *) gpr_global_malloc (size);
-#else
-		fBuffer = (char *) malloc (size);
-#endif
+        fBuffer = (char*)gpr_global_malloc(size);
 
 		if (!fBuffer)
 			{
@@ -152,11 +147,7 @@ void dng_memory_data::Clear ()
 	if (fBuffer)
 		{
 
-#if GPR_WRITING || GPR_READING
-		gpr_global_free (fBuffer);
-#else
-		free (fBuffer);
-#endif
+        gpr_global_free(fBuffer);
 
 		fBuffer = nullptr;
 
@@ -219,11 +210,7 @@ dng_malloc_block::dng_malloc_block (uint32 logicalSize)
 
 	//fMalloc = (char *) VirtualAlloc (nullptr, PhysicalSize (), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 	//printf("Calling malloc from %s\n", __FUNCTION__);
-#if GPR_WRITING || GPR_READING
-	fMalloc = (char *)gpr_global_malloc(PhysicalSize ());
-#else
-	fMalloc = (char *)malloc(PhysicalSize());
-#endif
+	fMalloc = (char *)gpr_global_malloc(PhysicalSize());
 
 	if (!fMalloc)
 		{
@@ -251,11 +238,7 @@ dng_malloc_block::~dng_malloc_block ()
 
 		//size_t size = *(size_t*)((char*)fMalloc - 16);
 		//VirtualFree(fMalloc, 0, MEM_RELEASE);
-#if GPR_WRITING || GPR_READING
-		gpr_global_free (fMalloc);
-#else
-		free (fMalloc);
-#endif
+        gpr_global_free( fMalloc );
 
 		}
 
@@ -284,11 +267,7 @@ dng_memory_block * dng_memory_allocator::Allocate (uint32 size)
 void * dng_memory_allocator::Malloc (size_t size)
 	{
 
-#if GPR_WRITING || GPR_READING
 	return gpr_global_malloc (size);
-#else
-	return malloc (size);
-#endif
 
 	}
 
@@ -297,11 +276,7 @@ void * dng_memory_allocator::Malloc (size_t size)
 void dng_memory_allocator::Free (void *ptr)
 	{
 
-#if GPR_WRITING || GPR_READING
 	gpr_global_free (ptr);
-#else
-	free (ptr);
-#endif
 
 	}
 

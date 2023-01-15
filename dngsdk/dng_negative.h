@@ -2,7 +2,7 @@
 // Copyright 2006-2019 Adobe Systems Incorporated
 // All Rights Reserved.
 //
-// NOTICE:  Adobe permits you to use, modify, and distribute this file in
+// NOTICE:	Adobe permits you to use, modify, and distribute this file in
 // accordance with the terms of the Adobe license agreement accompanying it.
 /*****************************************************************************/
 
@@ -20,11 +20,13 @@
 
 #include "dng_1d_function.h"
 #include "dng_auto_ptr.h"
+#include "dng_big_table.h"
 #include "dng_classes.h"
 #include "dng_fingerprint.h"
 #include "dng_image.h"
 #include "dng_linearization_info.h"
 #include "dng_matrix.h"
+#include "dng_memory.h"
 #include "dng_mosaic_info.h"
 #include "dng_mutex.h"
 #include "dng_opcode_list.h"
@@ -38,6 +40,7 @@
 #include "dng_utils.h"
 #include "dng_xy_coord.h"
 
+#include <memory>
 #include <vector>
 
 /*****************************************************************************/
@@ -61,11 +64,15 @@
 
 #endif
 
-#if GPR_READING
-	typedef bool (*Vc5DecodeCallback)(dng_stream &stream, dng_image &image );
-#endif
+/*****************************************************************************/
+
+typedef std::vector<dng_camera_profile_metadata> dng_profile_metadata_list;
 
 /*****************************************************************************/
+
+#if GPR_READING
+typedef bool (*Vc5DecodeCallback)(dng_stream &stream, dng_image &image );
+#endif
 
 /// \brief Noise model for photon and sensor read noise, assuming that they are
 /// independent random variables and spatially invariant.
@@ -203,14 +210,14 @@ class dng_noise_profile
 
 		uint32 NumFunctions () const;
 
-        /// Equality test.
+		/// Equality test.
 
-        bool operator== (const dng_noise_profile &profile) const;
+		bool operator== (const dng_noise_profile &profile) const;
 
-        bool operator!= (const dng_noise_profile &profile) const
-            {
-            return !(*this == profile);
-            }
+		bool operator!= (const dng_noise_profile &profile) const
+			{
+			return !(*this == profile);
+			}
 
 	};
 
@@ -255,9 +262,11 @@ class dng_metadata
 
 		// XMP data.
 
+		#if qDNGUseXMP
 		AutoPtr<dng_xmp> fXMP;
+		#endif
 
-		// If there a valid embedded XMP block, has is its digest?  nullptr if no valid
+		// If there a valid embedded XMP block, has is its digest?	nullptr if no valid
 		// embedded XMP.
 
 		dng_fingerprint fEmbeddedXMPDigest;
@@ -274,6 +283,14 @@ class dng_metadata
 		// Source file mimi-type, if known.
 
 		dng_string fSourceMIME;
+
+		// Big table dictionary for storing binary blocks in memory.
+
+		dng_big_table_dictionary fBigTableDictionary;
+
+		// Big table index for binary blocks embedded in original raw file.
+
+		dng_big_table_index fBigTableIndex;
 
 	public:
 
@@ -323,6 +340,11 @@ class dng_metadata
 		const void * IPTCData () const;
 
 		uint32 IPTCLength () const;
+
+		const dng_memory_block & IPTCBlock () const
+			{
+			return *fIPTCBlock;
+			}
 
 		uint64 IPTCOffset () const;
 
@@ -405,6 +427,8 @@ class dng_metadata
 
 		// API for XMP metadata:
 
+		#if qDNGUseXMP
+
 		bool SetXMP (dng_host &host,
 					 const void *buffer,
 					 uint32 count,
@@ -450,6 +474,8 @@ class dng_metadata
 
 		void ResetXMPSidecarNewer (dng_xmp * newXMP, bool inSidecar, bool isNewer );
 
+		#endif	// qDNGUseXMP
+
 		// Synchronize metadata sources.
 
 		void SynchronizeMetadata ();
@@ -473,6 +499,30 @@ class dng_metadata
 		const dng_string & SourceMIME () const
 			{
 			return fSourceMIME;
+			}
+
+		// Routines to access the big table dictionary.
+
+		void SetBigTableDictionary (const dng_big_table_dictionary &dictionary)
+			{
+			fBigTableDictionary = dictionary;
+			}
+
+		const dng_big_table_dictionary & BigTableDictionary () const
+			{
+			return fBigTableDictionary;
+			}
+
+		// Routines to access the big table index.
+
+		void SetBigTableIndex (const dng_big_table_index &index)
+			{
+			fBigTableIndex = index;
+			}
+
+		const dng_big_table_index & BigTableIndex () const
+			{
+			return fBigTableIndex;
 			}
 
 	};
@@ -499,6 +549,10 @@ const E & dng_metadata::Exif () const
 
 /*****************************************************************************/
 
+#if qDNGUseXMP
+
+/*****************************************************************************/
+
 template< class X >
 X & dng_metadata::XMP ()
 	{
@@ -516,6 +570,56 @@ const X & dng_metadata::XMP () const
 	if (!xmp) ThrowProgramError ("XMP object is nullptr.");
 	return dynamic_cast< const X & > (*xmp);
 	}
+
+/*****************************************************************************/
+
+#endif	// qDNGUseXMP
+
+/*****************************************************************************/
+
+class dng_semantic_mask
+	{
+
+	public:
+
+		// String identifying the semantics of this mask. Corresponds to
+		// SemanticName tag.
+
+		dng_string fName;
+
+		// String identifying the instance of this mask. Corresponds to
+		// SemanticInstanceID tag.
+
+		dng_string fInstanceID;
+
+		// XMP block. We don't use this for anything at present; just make
+		// sure we preserve it.
+
+		std::shared_ptr<const dng_memory_block> fXMP;
+
+		// The semantic mask. The origin of the image bounds is always (0,0)
+		// by convention.
+
+		std::shared_ptr<const dng_image> fMask;
+
+		// Optional MaskSubArea tag (top, left, bottom, right).
+
+		// [0]: top crop
+		// [1]: left crop
+
+		// [2]: width full
+		// [3]: height full
+
+		uint32 fMaskSubArea [4] = { 0, 0, 0, 0 };
+
+	public:
+
+		bool IsMaskSubAreaValid () const;
+
+		void CalcMaskSubArea (dng_point &origin,
+							  dng_rect &wholeImageArea) const;
+
+	};
 
 /*****************************************************************************/
 
@@ -567,6 +671,15 @@ class dng_negative
 		dng_urational fDefaultCropOriginH;
 		dng_urational fDefaultCropOriginV;
 
+		// Enhanced images can change the default crop, so we
+		// need to keep around the original value.
+
+		dng_urational fRawDefaultCropSizeH;
+		dng_urational fRawDefaultCropSizeV;
+
+		dng_urational fRawDefaultCropOriginH;
+		dng_urational fRawDefaultCropOriginV;
+
 		// Default user crop, in relative coordinates.
 
 		dng_urational fDefaultUserCropT;
@@ -582,6 +695,12 @@ class dng_negative
 		dng_urational fDefaultScaleH;
 		dng_urational fDefaultScaleV;
 
+		// Enhanced images can change the default scale, so we
+		// need to keep around the original value.
+
+		dng_urational fRawDefaultScaleH;
+		dng_urational fRawDefaultScaleV;
+
 		// Best quality scale factor. Used for the Nikon D1X and Fuji cameras
 		// to force everything to be a scale up rather than scale down. So,
 		// generally this is 1.0 / min (fDefaultScaleH, fDefaultScaleV) but
@@ -590,7 +709,12 @@ class dng_negative
 
 		dng_urational fBestQualityScale;
 
-		// Proxy image support.  Remember certain sizes for the original image
+		// Enhanced images can change the best quality scale, so we
+		// need to keep around the original value.
+
+		dng_urational fRawBestQualityScale;
+
+		// Proxy image support.	 Remember certain sizes for the original image
 		// this proxy was derived from.
 
 		dng_point fOriginalDefaultFinalSize;
@@ -615,24 +739,24 @@ class dng_negative
 		dng_urational fBaselineNoise;
 
 		// How much noise reduction has already been applied (0.0 to 1.0) to the
-		// the raw image data?  0.0 = none, 1.0 = "ideal" amount--i.e. don't apply any
-		// more by default.  0/0 for unknown.
+		// the raw image data?	0.0 = none, 1.0 = "ideal" amount--i.e. don't apply any
+		// more by default.	 0/0 for unknown.
 
 		dng_urational fNoiseReductionApplied;
 
-        // Enhanced images can change the applied noise reduction, so we
-        // need to keep around the original value.
+		// Enhanced images can change the applied noise reduction, so we
+		// need to keep around the original value.
 
-        dng_urational fRawNoiseReductionApplied;
+		dng_urational fRawNoiseReductionApplied;
 
 		// Amount of noise for this negative (see dng_noise_profile for details).
 
 		dng_noise_profile fNoiseProfile;
 
-        // Enhanced images can change the noise profile, so we
-        // need to keep around the original value.
+		// Enhanced images can change the noise profile, so we
+		// need to keep around the original value.
 
-        dng_noise_profile fRawNoiseProfile;
+		dng_noise_profile fRawNoiseProfile;
 
 		// Zero point for the exposure compensation slider. This reflects how
 		// the manufacturer sets up the camera and its conversions.
@@ -646,17 +770,17 @@ class dng_negative
 
 		dng_urational fBaselineSharpness;
 
-        // Enhanced images can change the baseline sharpness, so we
-        // need to keep around the original value.
+		// Enhanced images can change the baseline sharpness, so we
+		// need to keep around the original value.
 
-        dng_urational fRawBaselineSharpness;
+		dng_urational fRawBaselineSharpness;
 
 		// Chroma blur radius (or 0/0 for auto). Set to 0/1 to disable
 		// chroma blurring.
 
 		dng_urational fChromaBlurRadius;
 
-		// Anti-alias filter strength (0.0 to 1.0).  Used as a hint
+		// Anti-alias filter strength (0.0 to 1.0).	 Used as a hint
 		// to the demosaic algorithms.
 
 		dng_urational fAntiAliasStrength;
@@ -676,9 +800,9 @@ class dng_negative
 
 		uint32 fColorimetricReference;
 
-        // Is the stage 3 image floating point?
+		// Is the stage 3 image floating point?
 
-        bool fFloatingPoint;
+		bool fFloatingPoint;
 
 		// Number of color channels for this image (e.g. 1, 3, or 4).
 
@@ -716,6 +840,7 @@ class dng_negative
 
 		dng_matrix fCameraCalibration1;
 		dng_matrix fCameraCalibration2;
+		dng_matrix fCameraCalibration3;
 
 		// Signature which allows a profile to announce that it is compatible
 		// with these calibration matrices.
@@ -732,22 +857,22 @@ class dng_negative
 
 		// Raw image data digests. These are MD5 fingerprints of the raw image data
 		// in the file, computed using a specific algorithms.  They can be used
-		// verify the raw data has not been corrupted.  The new version is faster
+		// verify the raw data has not been corrupted.	The new version is faster
 		// to compute on MP machines, and is used starting with DNG version 1.4.
 
 		mutable dng_fingerprint fRawImageDigest;
 
 		mutable dng_fingerprint fNewRawImageDigest;
 
-		// Raw data unique ID.  This is an unique identifer for the actual
-		// raw image data in the file.  It can be used to index into caches
+		// Raw data unique ID.	This is an unique identifer for the actual
+		// raw image data in the file.	It can be used to index into caches
 		// for this data.
 
 		mutable dng_fingerprint fRawDataUniqueID;
 
 		mutable dng_std_mutex fRawDataUniqueIDMutex;
 
-		// Original raw file name.  Just the file name, not the full path.
+		// Original raw file name.	Just the file name, not the full path.
 
 		dng_string fOriginalRawFileName;
 
@@ -830,9 +955,9 @@ class dng_negative
 
 		AutoPtr<dng_image> fRawImage;
 
-        // The black level of the raw image (if not encoded by linearization info).
+		// The black level of the raw image (if not encoded by linearization info).
 
-        uint16 fRawImageBlackLevel;
+		uint16 fRawImageBlackLevel;
 
 		// The floating point bit depth of the raw file, if any.
 
@@ -863,27 +988,39 @@ class dng_negative
 
 		AutoPtr<dng_image> fUnflattenedStage3Image;
 
-        // Depth map.
+		// Depth map.
 
-        bool fHasDepthMap;
+		bool fHasDepthMap;
 
-        AutoPtr<dng_image> fDepthMap;
+		AutoPtr<dng_image> fDepthMap;
 
-        // Grabbed depth map, if we are not saving the current map.
+		// Grabbed depth map, if we are not saving the current map.
 
-        AutoPtr<dng_image> fRawDepthMap;
+		AutoPtr<dng_image> fRawDepthMap;
 
-        // Depth metadata.
+		// Depth metadata.
 
-        uint32        fDepthFormat;
-        dng_urational fDepthNear;
-        dng_urational fDepthFar;
-        uint32        fDepthUnits;
-        uint32        fDepthMeasureType;
+		uint32		  fDepthFormat;
+		dng_urational fDepthNear;
+		dng_urational fDepthFar;
+		uint32		  fDepthUnits;
+		uint32		  fDepthMeasureType;
 
-        // Enhance metadata.
+		// Enhance metadata.
 
-        dng_string fEnhanceParams;
+		dng_string fEnhanceParams;
+
+		// Semantic masks.
+
+		std::vector<dng_semantic_mask> fSemanticMasks;
+
+		// Profile Gain Table Map.
+
+		std::shared_ptr<const dng_gain_table_map> fProfileGainTableMap;
+
+		// RGBTables.
+
+		std::shared_ptr<const dng_masked_rgb_tables> fMaskedRGBTables;
 
 	public:
 
@@ -891,21 +1028,19 @@ class dng_negative
 
 		static dng_negative * Make (dng_host &host);
 
-#if GPR_READING
-		bool IsVc5Image(dng_info &info);
-
-		void ReadVc5Image (dng_host &host,
-			dng_stream &stream,
-			dng_info &info,
-			dng_read_image &imageReader );
-#endif
-
 		/// Provide access to the memory allocator used for this object.
 
 		dng_memory_allocator & Allocator () const
 			{
 			return fAllocator;
 			}
+
+        bool IsVc5Image(dng_info &info);
+
+        void ReadVc5Image (dng_host &host,
+                           dng_stream &stream,
+                           dng_info &info,
+                           dng_read_image &imageReader );
 
 		/// Getter for ModelName.
 
@@ -940,6 +1075,20 @@ class dng_negative
 		dng_metadata &Metadata ()
 			{
 			return fMetadata;
+			}
+
+		/// Getter for embedded big table index.
+
+		const dng_big_table_index & BigTableIndex () const
+			{
+			return fMetadata.BigTableIndex ();
+			}
+
+		/// Getter for embedded big table dictionary.
+
+		const dng_big_table_dictionary & BigTableDictionary () const
+			{
+			return fMetadata.BigTableDictionary ();
 			}
 
 		#if qMetadataOnConst
@@ -1012,7 +1161,7 @@ class dng_negative
 		/// Setter for DefaultCropSize.
 
 		void SetDefaultCropSize (const dng_urational &sizeH,
-						         const dng_urational &sizeV)
+								 const dng_urational &sizeV)
 			{
 			fDefaultCropSizeH = sizeH;
 			fDefaultCropSizeV = sizeV;
@@ -1021,10 +1170,10 @@ class dng_negative
 		/// Setter for DefaultCropSize.
 
 		void SetDefaultCropSize (uint32 sizeH,
-						         uint32 sizeV)
+								 uint32 sizeV)
 			{
 			SetDefaultCropSize (dng_urational (sizeH, 1),
-						        dng_urational (sizeV, 1));
+								dng_urational (sizeV, 1));
 			}
 
 		/// Getter for DefaultCropSize horizontal.
@@ -1044,7 +1193,7 @@ class dng_negative
 		/// Setter for DefaultCropOrigin.
 
 		void SetDefaultCropOrigin (const dng_urational &originH,
-							       const dng_urational &originV)
+								   const dng_urational &originV)
 			{
 			fDefaultCropOriginH = originH;
 			fDefaultCropOriginV = originV;
@@ -1053,10 +1202,10 @@ class dng_negative
 		/// Setter for DefaultCropOrigin.
 
 		void SetDefaultCropOrigin (uint32 originH,
-							       uint32 originV)
+								   uint32 originV)
 			{
 			SetDefaultCropOrigin (dng_urational (originH, 1),
-						   		  dng_urational (originV, 1));
+								  dng_urational (originV, 1));
 			}
 
 		/// Set default crop around center of image.
@@ -1084,6 +1233,53 @@ class dng_negative
 		const dng_urational & DefaultCropOriginV () const
 			{
 			return fDefaultCropOriginV;
+			}
+
+		// Sets raw default crop to be a copy of the
+		// default crop, if not set yet.
+
+		void SetRawDefaultCrop ()
+			{
+
+			if (!fRawDefaultCropSizeH.IsValid ())
+				{
+
+				fRawDefaultCropSizeH = fDefaultCropSizeH;
+				fRawDefaultCropSizeV = fDefaultCropSizeV;
+
+				fRawDefaultCropOriginH = fDefaultCropOriginH;
+				fRawDefaultCropOriginV = fDefaultCropOriginV;
+
+				}
+
+			}
+
+		/// Getter for fRawDefaultCropSizeH.
+
+		const dng_urational & RawDefaultCropSizeH () const
+			{
+			return fRawDefaultCropSizeH;
+			}
+
+		/// Getter for fRawDefaultCropSizeV.
+
+		const dng_urational & RawDefaultCropSizeV () const
+			{
+			return fRawDefaultCropSizeV;
+			}
+
+		/// Getter for fRawDefaultCropOriginH.
+
+		const dng_urational & RawDefaultCropOriginH () const
+			{
+			return fRawDefaultCropOriginH;
+			}
+
+		/// Getter for fRawDefaultCropOriginV.
+
+		const dng_urational & RawDefaultCropOriginV () const
+			{
+			return fRawDefaultCropOriginV;
 			}
 
 		/// Is there a default user crop?
@@ -1198,6 +1394,32 @@ class dng_negative
 			return fDefaultScaleV;
 			}
 
+		// Sets the raw best quality scale to be a copy of the
+		// best quality scale, if not set yet.
+
+		void SetRawDefaultScale ()
+			{
+			if (!fRawDefaultScaleH.IsValid ())
+				{
+				fRawDefaultScaleH = fDefaultScaleH;
+				fRawDefaultScaleV = fDefaultScaleV;
+				}
+			}
+
+		/// Get raw default scale horizontal value.
+
+		const dng_urational & RawDefaultScaleH () const
+			{
+			return fRawDefaultScaleH;
+			}
+
+		/// Get raw default scale vertical value.
+
+		const dng_urational & RawDefaultScaleV () const
+			{
+			return fRawDefaultScaleV;
+			}
+
 		/// Setter for BestQualityScale.
 
 		void SetBestQualityScale (const dng_urational &scale)
@@ -1212,12 +1434,30 @@ class dng_negative
 			return fBestQualityScale;
 			}
 
-        /// Is the best quality scale different than the default scale?
+		/// Is the best quality scale different than the default scale?
 
-        bool HasBestQualityScale () const
-            {
-            return fBestQualityScale.As_real64 () != 1.0;
-            }
+		bool HasBestQualityScale () const
+			{
+			return fBestQualityScale.As_real64 () != 1.0;
+			}
+
+		// Sets the raw best quality scale to be a copy of the
+		// best quality scale, if not set yet.
+
+		void SetRawBestQualityScale ()
+			{
+			if (!fRawBestQualityScale.IsValid ())
+				{
+				fRawBestQualityScale = fBestQualityScale;
+				}
+			}
+
+		/// Getter for RawBestQualityScale.
+
+		const dng_urational & RawBestQualityScale () const
+			{
+			return fRawBestQualityScale;
+			}
 
 		/// API for raw to full image scaling factors horizontal.
 
@@ -1236,7 +1476,7 @@ class dng_negative
 		/// Setter for raw to full scales.
 
 		void SetRawToFullScale (real64 scaleH,
-							    real64 scaleV)
+								real64 scaleV)
 			{
 			fRawToFullScaleH = scaleH;
 			fRawToFullScaleV = scaleV;
@@ -1264,15 +1504,15 @@ class dng_negative
 		real64 SquareHeight () const
 			{
 			return DefaultCropSizeV ().As_real64 () *
-				   DefaultScaleV    ().As_real64 () /
-				   DefaultScaleH    ().As_real64 ();
+				   DefaultScaleV	().As_real64 () /
+				   DefaultScaleH	().As_real64 ();
 			}
 
 		/// Default cropped image aspect ratio.
 
 		real64 AspectRatio () const
 			{
-			return SquareWidth  () /
+			return SquareWidth	() /
 				   SquareHeight ();
 			}
 
@@ -1330,7 +1570,7 @@ class dng_negative
 			return FinalHeight (DefaultScale () * BestQualityScale ().As_real64 ());
 			}
 
-		/// Default size of original (non-proxy) image.  For non-proxy images, this
+		/// Default size of original (non-proxy) image.	 For non-proxy images, this
 		/// is equal to DefaultFinalWidth/DefaultFinalHight.  For proxy images, this
 		/// is equal to the DefaultFinalWidth/DefaultFinalHeight of the image this
 		/// proxy was derived from.
@@ -1364,7 +1604,7 @@ class dng_negative
 			fOriginalBestQualityFinalSize = size;
 			}
 
-		/// DefaultCropSize for original (non-proxy) image.  For non-proxy images,
+		/// DefaultCropSize for original (non-proxy) image.	 For non-proxy images,
 		/// this is equal to the DefaultCropSize.  for proxy images, this is
 		/// equal size of the DefaultCropSize of the image this proxy was derived from.
 
@@ -1386,6 +1626,10 @@ class dng_negative
 			fOriginalDefaultCropSizeH = sizeH;
 			fOriginalDefaultCropSizeV = sizeV;
 			}
+
+		/// Clears the original size fields.
+
+		void ClearOriginalSizes ();
 
 		/// If the original size fields are undefined, set them to the
 		/// current sizes.
@@ -1435,23 +1679,23 @@ class dng_negative
 			return fNoiseReductionApplied;
 			}
 
-        // Sets the raw noise reduction applied to be a copy of the unenhanced
-        // noise reduction applied, if not set yet.
+		// Sets the raw noise reduction applied to be a copy of the unenhanced
+		// noise reduction applied, if not set yet.
 
-        void SetRawNoiseReductionApplied ()
-            {
-            if (fRawNoiseReductionApplied.NotValid ())
-                {
-                fRawNoiseReductionApplied = fNoiseReductionApplied;
-                }
-            }
+		void SetRawNoiseReductionApplied ()
+			{
+			if (fRawNoiseReductionApplied.NotValid ())
+				{
+				fRawNoiseReductionApplied = fNoiseReductionApplied;
+				}
+			}
 
-        // Gets the raw NoiseReductionApplied value.
+		// Gets the raw NoiseReductionApplied value.
 
-        const dng_urational & RawNoiseReductionApplied () const
-            {
-            return fRawNoiseReductionApplied;
-            }
+		const dng_urational & RawNoiseReductionApplied () const
+			{
+			return fRawNoiseReductionApplied;
+			}
 
 		/// Setter for noise profile.
 
@@ -1474,30 +1718,30 @@ class dng_negative
 			return fNoiseProfile;
 			}
 
-        // Does this negative have a valid raw noise profile?
+		// Does this negative have a valid raw noise profile?
 
-        bool HasRawNoiseProfile () const
-            {
-            return fRawNoiseProfile.IsValidForNegative (*this);
-            }
+		bool HasRawNoiseProfile () const
+			{
+			return fRawNoiseProfile.IsValidForNegative (*this);
+			}
 
-        // Sets the raw noise profile to be a copy of the unenhanced
-        // noise profile, if not set yet.
+		// Sets the raw noise profile to be a copy of the unenhanced
+		// noise profile, if not set yet.
 
-        void SetRawNoiseProfile ()
-            {
-            if (!HasRawNoiseProfile ())
-                {
-                fRawNoiseProfile = fNoiseProfile;
-                }
-            }
+		void SetRawNoiseProfile ()
+			{
+			if (!HasRawNoiseProfile ())
+				{
+				fRawNoiseProfile = fNoiseProfile;
+				}
+			}
 
-        // Getter for raw noise profile.
+		// Getter for raw noise profile.
 
-        const dng_noise_profile & RawNoiseProfile () const
-            {
-            return fRawNoiseProfile;
-            }
+		const dng_noise_profile & RawNoiseProfile () const
+			{
+			return fRawNoiseProfile;
+			}
 
 		/// Setter for BaselineExposure.
 
@@ -1546,27 +1790,27 @@ class dng_negative
 			return BaselineSharpnessR ().As_real64 ();
 			}
 
-        // Sets the raw baseline sharpness to be a copy of the baseline
-        // sharpness, if not set yet.
+		// Sets the raw baseline sharpness to be a copy of the baseline
+		// sharpness, if not set yet.
 
-        void SetRawBaselineSharpness ()
-            {
-            if (fRawBaselineSharpness.d == 0)
-                {
-                fRawBaselineSharpness = fBaselineSharpness;
-                }
-            }
+		void SetRawBaselineSharpness ()
+			{
+			if (fRawBaselineSharpness.d == 0)
+				{
+				fRawBaselineSharpness = fBaselineSharpness;
+				}
+			}
 
-        // Gets the raw baseline sharpness value.
+		// Gets the raw baseline sharpness value.
 
-        const dng_urational & RawBaselineSharpness () const
-            {
-            if (fRawBaselineSharpness.d != 0)
-                {
-                return fRawBaselineSharpness;
-                }
-            return fBaselineSharpness;
-            }
+		const dng_urational & RawBaselineSharpness () const
+			{
+			if (fRawBaselineSharpness.d != 0)
+				{
+				return fRawBaselineSharpness;
+				}
+			return fBaselineSharpness;
+			}
 
 		/// Setter for ChromaBlurRadius.
 
@@ -1647,30 +1891,30 @@ class dng_negative
 			return fColorimetricReference;
 			}
 
-        // Floating point flag.
+		// Floating point flag.
 
-        void SetFloatingPoint (bool isFloatingPoint)
-            {
-            fFloatingPoint = isFloatingPoint;
-            }
+		void SetFloatingPoint (bool isFloatingPoint)
+			{
+			fFloatingPoint = isFloatingPoint;
+			}
 
-        bool IsFloatingPoint () const
-            {
-            return fFloatingPoint;
-            }
+		bool IsFloatingPoint () const
+			{
+			return fFloatingPoint;
+			}
 
-        // HDR/NDR.
+		// HDR/NDR.
 
-        bool IsHighDynamicRange () const
-            {
-            return IsFloatingPoint () &&
-                   ColorimetricReference () == crSceneReferred;
-            }
+		bool IsHighDynamicRange () const
+			{
+			return IsFloatingPoint () &&
+				   ColorimetricReference () == crSceneReferred;
+			}
 
-        bool IsNormalDynamicRange () const
-            {
-            return !IsHighDynamicRange ();
-            }
+		bool IsNormalDynamicRange () const
+			{
+			return !IsHighDynamicRange ();
+			}
 
 		/// Setter for ColorChannels.
 
@@ -1755,7 +1999,7 @@ class dng_negative
 
 		// API for camera calibration:
 
-		/// Setter for first of up to two color matrices used for individual camera calibrations.
+		/// Setter for first of up to three color matrices used for individual camera calibrations.
 		///
 		/// The sequence of matrix transforms is:
 		/// Camera data --> camera calibration --> "inverse" of color matrix
@@ -1766,7 +2010,7 @@ class dng_negative
 
 		void SetCameraCalibration1 (const dng_matrix &m);
 
-		/// Setter for second of up to two color matrices used for individual camera calibrations.
+		/// Setter for second of up to three color matrices used for individual camera calibrations.
 		///
 		/// The sequence of matrix transforms is:
 		/// Camera data --> camera calibration --> "inverse" of color matrix
@@ -1777,18 +2021,36 @@ class dng_negative
 
 		void SetCameraCalibration2 (const dng_matrix &m);
 
-		/// Getter for first of up to two color matrices used for individual camera calibrations.
+		/// Setter for third of up to three color matrices used for individual camera calibrations.
+		///
+		/// The sequence of matrix transforms is:
+		/// Camera data --> camera calibration --> "inverse" of color matrix
+		///
+		/// This will be a 4x4 matrix for a four-color camera. The defaults are
+		/// almost always the identity matrix, and for the cases where they
+		/// aren't, they are diagonal matrices.
+
+		void SetCameraCalibration3 (const dng_matrix &m);
+
+		/// Getter for first of up to three color matrices used for individual camera calibrations.
 
 		const dng_matrix & CameraCalibration1 () const
 			{
 			return fCameraCalibration1;
 			}
 
-		/// Getter for second of up to two color matrices used for individual camera calibrations.
+		/// Getter for second of up to three color matrices used for individual camera calibrations.
 
 		const dng_matrix & CameraCalibration2 () const
 			{
 			return fCameraCalibration2;
+			}
+
+		/// Getter for third of up to three color matrices used for individual camera calibrations.
+
+		const dng_matrix & CameraCalibration3 () const
+			{
+			return fCameraCalibration3;
 			}
 
 		void SetCameraCalibrationSignature (const char *signature)
@@ -1801,38 +2063,31 @@ class dng_negative
 			return fCameraCalibrationSignature;
 			}
 
-		// Camera Profile API:
+		// Camera Profile API for profiles attached to negative:
 
 		void AddProfile (AutoPtr<dng_camera_profile> &profile);
 
 		void ClearProfiles ();
 
-		void ClearProfiles (bool clearBuiltinMatrixProfiles,
-							bool clearReadFromDisk);
-
 		uint32 ProfileCount () const;
 
 		const dng_camera_profile & ProfileByIndex (uint32 index) const;
 
-		virtual const dng_camera_profile * ProfileByID (const dng_camera_profile_id &id,
-														bool useDefaultIfNoMatch = true) const;
+		// Get a list a camera profile metadata.  This can be overridden to
+		// add support for camera profiles not attached to the negative.
 
-		bool HasProfileID (const dng_camera_profile_id &id) const
-			{
-			return ProfileByID (id, false) != nullptr;
-			}
+		virtual void GetProfileMetadataList (dng_profile_metadata_list &list) const;
 
-		// Returns the camera profile to embed when saving to DNG:
+		// Finds a camera profile to use for rendering.
 
-		virtual const dng_camera_profile * ComputeCameraProfileToEmbed
-													(const dng_metadata &metadata) const;
+		bool GetProfileByID (const dng_camera_profile_id &id,
+							 dng_camera_profile &foundProfile,
+							 bool useDefaultIfNoMatch = true) const;
 
-		// For non-const negatives, we can use the embedded metadata.
+		// Returns the camera profile to embed when saving to DNG.
 
-		const dng_camera_profile * CameraProfileToEmbed ()
-			{
-			return ComputeCameraProfileToEmbed (Metadata ());
-			}
+		bool GetProfileToEmbed (const dng_metadata &metadata,
+								dng_camera_profile &foundProfile) const;
 
 		// API for AsShotProfileName.
 
@@ -1848,14 +2103,22 @@ class dng_negative
 
 		// Makes a dng_color_spec object for this negative.
 
-		virtual dng_color_spec * MakeColorSpec (const dng_camera_profile_id &id) const;
+		virtual dng_color_spec * MakeColorSpec (const dng_camera_profile_id &id,
+												bool allowStubbed = false) const;
 
 		// Compute a MD5 hash on an image, using a fixed algorithm.
 		// The results must be stable across different hardware, OSes,
 		// and software versions.
 
 		static dng_fingerprint FindImageDigest (dng_host &host,
-                                                const dng_image &image);
+												const dng_image &image);
+
+		// A more multi-process friendly hash on image.	 The results are also
+		// stable across different hardware, OSes, and software versions.
+
+		static dng_fingerprint FindFastImageDigest (dng_host &host,
+													const dng_image &image,
+													uint32 pixelType);
 
 		// API for RawImageDigest and NewRawImageDigest:
 
@@ -1871,7 +2134,7 @@ class dng_negative
 
 		void ClearRawImageDigest () const
 			{
-			fRawImageDigest   .Clear ();
+			fRawImageDigest	  .Clear ();
 			fNewRawImageDigest.Clear ();
 			}
 
@@ -1896,6 +2159,11 @@ class dng_negative
 		void SetRawDataUniqueID (const dng_fingerprint &id)
 			{
 			fRawDataUniqueID = id;
+			}
+
+		const dng_fingerprint & BaseRawDataUniqueID () const
+			{
+			return fRawDataUniqueID;
 			}
 
 		dng_fingerprint RawDataUniqueID () const;
@@ -2104,6 +2372,8 @@ class dng_negative
 
 		// API for XMP metadata:
 
+		#if qDNGUseXMP
+
 		bool SetXMP (dng_host &host,
 					 const void *buffer,
 					 uint32 count,
@@ -2151,6 +2421,8 @@ class dng_negative
 			return Metadata ().HaveValidEmbeddedXMP ();
 			}
 
+		#endif	// qDNGUseXMP
+
 		// API for source MIME type.
 
 		void SetSourceMIME (const char *s)
@@ -2170,7 +2442,7 @@ class dng_negative
 			fLinearizationInfo.Reset ();
 			}
 
-		// Linearization curve.  Usually used to increase compression ratios
+		// Linearization curve.	 Usually used to increase compression ratios
 		// by storing the compressed data in a more visually uniform space.
 		// This is a 16-bit LUT that maps the stored data back to linear.
 
@@ -2198,9 +2470,9 @@ class dng_negative
 							int32 plane = -1);
 
 		void SetQuadBlacks (real64 black0,
-						    real64 black1,
-						    real64 black2,
-						    real64 black3,
+							real64 black1,
+							real64 black2,
+							real64 black3,
 							int32 plane = -1);
 
 		void Set6x6Blacks (real64 blacks6x6 [36],
@@ -2267,7 +2539,7 @@ class dng_negative
 
 			SetColorKeys (colorKeyGreen,
 						  colorKeyMagenta,
-					      colorKeyCyan,
+						  colorKeyCyan,
 						  colorKeyYellow);
 
 			}
@@ -2386,9 +2658,9 @@ class dng_negative
 
 		const dng_image & RawImage () const;
 
-        // Returns the raw image black level in 16-bit space.
+		// Returns the raw image black level in 16-bit space.
 
-        uint16 RawImageBlackLevel () const;
+		uint16 RawImageBlackLevel () const;
 
 		// API for raw floating point bit depth.
 
@@ -2429,23 +2701,23 @@ class dng_negative
 
 		void FindRawJPEGImageDigest (dng_host &host) const;
 
-        // Read the opcode lists.
+		// Read the opcode lists.
 
-        virtual void ReadOpcodeLists (dng_host &host,
-                                      dng_stream &stream,
-                                      dng_info &info);
+		virtual void ReadOpcodeLists (dng_host &host,
+									  dng_stream &stream,
+									  dng_info &info);
 
-        // Read the stage 1 image.
+		// Read the stage 1 image.
 
-        virtual void ReadStage1Image (dng_host &host,
-                                      dng_stream &stream,
-                                      dng_info &info);
+		virtual void ReadStage1Image (dng_host &host,
+									  dng_stream &stream,
+									  dng_info &info);
 
-        // Read the enhanced image directly into the stage 3 image.
+		// Read the enhanced image directly into the stage 3 image.
 
-        virtual void ReadEnhancedImage (dng_host &host,
-                                        dng_stream &stream,
-                                        dng_info &info);
+		virtual void ReadEnhancedImage (dng_host &host,
+										dng_stream &stream,
+										dng_info &info);
 
 		// Assign the stage 1 image.
 
@@ -2482,10 +2754,10 @@ class dng_negative
 
 		// Optical black level of stage 3 image (in [0,65535]).
 
-        void SetStage3BlackLevel (uint16 level)
-            {
-            fStage3BlackLevel = level;
-            }
+		void SetStage3BlackLevel (uint16 level)
+			{
+			fStage3BlackLevel = level;
+			}
 
 		uint16 Stage3BlackLevel () const
 			{
@@ -2515,7 +2787,7 @@ class dng_negative
 		dng_image * EncodeRawProxy (dng_host &host,
 									const dng_image &srcImage,
 									dng_opcode_list &opcodeList,
-                                    real64 *blackLevel) const;
+									real64 *blackLevel) const;
 
 		// Convert to a proxy negative.
 
@@ -2524,9 +2796,9 @@ class dng_negative
 							 uint32 proxySize = 0,
 							 uint64 proxyCount = 0);
 
-        // IsProxy API:
+		// IsProxy API:
 
-        bool IsProxy () const;
+		bool IsProxy () const;
 
 		// IsPreview API:
 
@@ -2567,8 +2839,8 @@ class dng_negative
 								   dng_stream &stream,
 								   dng_info &info);
 
-        virtual void ResizeTransparencyToMatchStage3 (dng_host &host,
-                                                      bool convertTo8Bit = false);
+		virtual void ResizeTransparencyToMatchStage3 (dng_host &host,
+													  bool convertTo8Bit = false);
 
 		virtual bool NeedFlattenTransparency (dng_host &host);
 
@@ -2579,9 +2851,9 @@ class dng_negative
 		// Depth map API:
 
 		bool HasDepthMap () const
-            {
-            return fHasDepthMap;
-            }
+			{
+			return fHasDepthMap;
+			}
 
 		void SetHasDepthMap (bool hasDepthMap)
 			{
@@ -2600,87 +2872,158 @@ class dng_negative
 			return (fDepthMap.Get () != nullptr);
 			}
 
-        const dng_image * RawDepthMap () const
-            {
-            if (fRawDepthMap.Get ())
-                {
-                return fRawDepthMap.Get ();
-                }
-            return DepthMap ();
-            }
+		const dng_image * RawDepthMap () const
+			{
+			if (fRawDepthMap.Get ())
+				{
+				return fRawDepthMap.Get ();
+				}
+			return DepthMap ();
+			}
 
-        void ReadDepthMap (dng_host &host,
-                           dng_stream &stream,
-                           dng_info &info);
+		void ResetDepthMap ()
+			{
+			fDepthMap.Reset ();
+			fRawDepthMap.Reset ();
+			}
 
-        virtual void ResizeDepthToMatchStage3 (dng_host &host);
+		void ReadDepthMap (dng_host &host,
+						   dng_stream &stream,
+						   dng_info &info);
 
-        uint32 DepthFormat () const
-            {
-            return fDepthFormat;
-            }
+		virtual void ResizeDepthToMatchStage3 (dng_host &host);
 
-        void SetDepthFormat (uint32 format)
-            {
-            fDepthFormat = format;
-            }
+		uint32 DepthFormat () const
+			{
+			return fDepthFormat;
+			}
 
-        const dng_urational & DepthNear () const
-            {
-            return fDepthNear;
-            }
+		void SetDepthFormat (uint32 format)
+			{
+			fDepthFormat = format;
+			}
 
-        void SetDepthNear (const dng_urational &dist)
-            {
-            fDepthNear = dist;
-            }
+		const dng_urational & DepthNear () const
+			{
+			return fDepthNear;
+			}
 
-        const dng_urational & DepthFar () const
-            {
-            return fDepthFar;
-            }
+		void SetDepthNear (const dng_urational &dist)
+			{
+			fDepthNear = dist;
+			}
 
-        void SetDepthFar (const dng_urational &dist)
-            {
-            fDepthFar = dist;
-            }
+		const dng_urational & DepthFar () const
+			{
+			return fDepthFar;
+			}
 
-        uint32 DepthUnits () const
-            {
-            return fDepthUnits;
-            }
+		void SetDepthFar (const dng_urational &dist)
+			{
+			fDepthFar = dist;
+			}
 
-        void SetDepthUnits (uint32 units)
-            {
-            fDepthUnits = units;
-            }
+		uint32 DepthUnits () const
+			{
+			return fDepthUnits;
+			}
 
-        uint32 DepthMeasureType () const
-            {
-            return fDepthMeasureType;
-            }
+		void SetDepthUnits (uint32 units)
+			{
+			fDepthUnits = units;
+			}
 
-        void SetDepthMeasureType (uint32 measure)
-            {
-            fDepthMeasureType = measure;
-            }
+		uint32 DepthMeasureType () const
+			{
+			return fDepthMeasureType;
+			}
 
-         // EnhanceParams API:
+		void SetDepthMeasureType (uint32 measure)
+			{
+			fDepthMeasureType = measure;
+			}
 
-        const dng_string & EnhanceParams () const
-            {
-            return fEnhanceParams;
-            }
+		 // EnhanceParams API:
 
-        void SetEnhanceParams (const dng_string &s)
-            {
-            fEnhanceParams = s;
-            }
+		const dng_string & EnhanceParams () const
+			{
+			return fEnhanceParams;
+			}
 
-        void SetEnhanceParams (const char *s)
-            {
-            fEnhanceParams.Set (s);
-            }
+		void SetEnhanceParams (const dng_string &s)
+			{
+			fEnhanceParams = s;
+			}
+
+		void SetEnhanceParams (const char *s)
+			{
+			fEnhanceParams.Set (s);
+			}
+
+		// SemanticMask API:
+
+		bool HasSemanticMask () const;
+
+		bool HasSemanticMask (uint32 index) const;
+
+		uint32 NumSemanticMasks () const;
+
+		const dng_semantic_mask & SemanticMask (uint32 index) const;
+
+		const dng_semantic_mask & RawSemanticMask (uint32 index) const;
+
+		void SetSemanticMask (uint32 index,
+							  const dng_semantic_mask &mask);
+
+		void AppendSemanticMask (const dng_semantic_mask &mask);
+
+		void ReadSemanticMasks (dng_host &host,
+								dng_stream &stream,
+								dng_info &info);
+
+		// ProfileGainTableMap API:
+
+		bool HasProfileGainTableMap () const;
+
+		const dng_gain_table_map & ProfileGainTableMap () const;
+
+		std::shared_ptr<const dng_gain_table_map> ShareProfileGainTableMap () const
+			{
+			return fProfileGainTableMap;
+			}
+
+		// Gives negative shared ownership of gainTableMap.
+
+		void SetProfileGainTableMap
+			(const std::shared_ptr<const dng_gain_table_map> &gainTableMap);
+
+		// Transfer ownership of gainTableMap to negative. After return,
+		// gainTableMap will be nullptr.
+
+		void SetProfileGainTableMap
+			(AutoPtr<dng_gain_table_map> &gainTableMap);
+
+		// RGBTables API:
+
+		bool HasMaskedRGBTables () const;
+
+		const dng_masked_rgb_tables & MaskedRGBTables () const;
+
+		std::shared_ptr<const dng_masked_rgb_tables> ShareMaskedRGBTables () const
+			{
+			return fMaskedRGBTables;
+			}
+
+		// Gives negative shared ownership of maskedRGBTables.
+
+		void SetMaskedRGBTables
+			(const std::shared_ptr<const dng_masked_rgb_tables> &maskedRGBTables);
+
+		// Transfer ownership of maskedRGBTables to negative. After return,
+		// maskedRGBTables will be nullptr.
+
+		void SetMaskedRGBTables
+			(AutoPtr<dng_masked_rgb_tables> &maskedRGBTables);
 
 	protected:
 
@@ -2705,17 +3048,33 @@ class dng_negative
 		virtual void DefloatStage2 (dng_host &host);
 
 		virtual void DoInterpolateStage3 (dng_host &host,
-									      int32 srcPlane,
-                                          dng_matrix *scaleTransforms);
+										  int32 srcPlane,
+										  dng_matrix *scaleTransforms);
 
 		virtual void DoMergeStage3 (dng_host &host,
-                                    dng_matrix *scaleTransforms);
+									dng_matrix *scaleTransforms);
 
 		virtual void DoBuildStage3 (dng_host &host,
 									int32 srcPlane,
-                                    dng_matrix *scaleTransforms);
+									dng_matrix *scaleTransforms);
 
 		virtual void AdjustProfileForStage3 ();
+
+		virtual bool GetProfileByMetadata (const dng_camera_profile_metadata &metadata,
+										   dng_camera_profile &foundProfile) const;
+
+		virtual bool GetProfileByIDFromList (const dng_profile_metadata_list &list,
+											 const dng_camera_profile_id &id,
+											 dng_camera_profile &foundProfile,
+											 bool useDefaultIfNoMatch) const;
+
+		virtual bool GetProfileToEmbedFromList (const dng_profile_metadata_list &list,
+												const dng_metadata &metadata,
+												dng_camera_profile &foundProfile) const;
+
+		void AdjustSemanticMasksForProxy (dng_host &host,
+										  const dng_rect &originalStage3Bounds,
+										  const dng_rect &defaultCropArea);
 
 	};
 

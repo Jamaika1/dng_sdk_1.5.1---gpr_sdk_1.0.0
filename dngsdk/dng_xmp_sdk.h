@@ -2,7 +2,7 @@
 // Copyright 2006-2019 Adobe Systems Incorporated
 // All Rights Reserved.
 //
-// NOTICE:  Adobe permits you to use, modify, and distribute this file in
+// NOTICE:	Adobe permits you to use, modify, and distribute this file in
 // accordance with the terms of the Adobe license agreement accompanying it.
 /*****************************************************************************/
 
@@ -15,6 +15,10 @@
 #include "dng_classes.h"
 #include "dng_flags.h"
 #include "dng_types.h"
+
+/*****************************************************************************/
+
+#if qDNGUseXMP
 
 /*****************************************************************************/
 
@@ -31,6 +35,9 @@ extern const char *XMP_NS_MM;
 extern const char *XMP_NS_CRS;
 extern const char *XMP_NS_CRSS;
 extern const char *XMP_NS_CRD;
+extern const char *XMP_NS_CRLCP;
+
+extern const char *XMP_NS_LR;
 
 extern const char *XMP_NS_LCP;
 
@@ -45,6 +52,10 @@ extern const char *XMP_NS_DNG;
 
 extern const char *XMP_NS_PANO;
 
+extern const char *XMP_NS_GPANO;
+
+extern const char *XMP_NS_REGIONS;
+
 /*****************************************************************************/
 
 class dng_xmp_private;
@@ -52,8 +63,8 @@ class dng_xmp_private;
 /*****************************************************************************/
 
 typedef bool (IteratePathsCallback) (const char *ns,
-			  				   	     const char *path,
-			  				         void *callbackData);
+									 const char *path,
+									 void *callbackData);
 
 /*****************************************************************************/
 
@@ -87,16 +98,16 @@ class dng_xmp_sdk
 
 		bool HasMeta () const;
 
-        void RequireMeta ()
-            {
-            NeedMeta ();
-            }
+		void RequireMeta ()
+			{
+			NeedMeta ();
+			}
 
 		void * GetPrivateMeta ();
 
 		void Parse (dng_host &host,
 					const char *buffer,
-				    uint32 count);
+					uint32 count);
 
 		bool Exists (const char *ns,
 					 const char *path) const;
@@ -108,20 +119,20 @@ class dng_xmp_sdk
 							  bool propIsStruct = false);
 
 		int32 CountArrayItems (const char *ns,
-		                       const char *path) const;
+							   const char *path) const;
 
 		bool HasNameSpace (const char *ns) const;
 
 		void Remove (const char *ns,
-				     const char *path);
+					 const char *path);
 
 		void RemoveProperties (const char *ns);
 
 		bool IsEmptyString (const char *ns,
-					        const char *path);
+							const char *path);
 
 		bool IsEmptyArray (const char *ns,
-					       const char *path);
+						   const char *path);
 
 		void ComposeArrayItemPath (const char *ns,
 								   const char *arrayName,
@@ -129,29 +140,30 @@ class dng_xmp_sdk
 								   dng_string &s) const;
 
 		void ComposeStructFieldPath (const char *ns,
-								     const char *structName,
-								     const char *fieldNS,
+									 const char *structName,
+									 const char *fieldNS,
 									 const char *fieldName,
-								     dng_string &s) const;
+									 dng_string &s) const;
 
 		bool GetNamespacePrefix (const char *uri,
 								 dng_string &s) const;
 
 		bool GetString (const char *ns,
-				   		const char *path,
-				   		dng_string &s) const;
+						const char *path,
+						dng_string &s) const;
 
 		void ValidateStringList (const char *ns,
 								 const char *path);
 
 		bool GetStringList (const char *ns,
 							const char *path,
-							dng_string_list &list) const;
+							dng_string_list &list,
+							dng_abort_sniffer *sniffer = nullptr) const;
 
 		bool GetAltLangDefault (const char *ns,
 								const char *path,
 								dng_string &s,
-                                bool silent = false) const;
+								bool silent = false) const;
 
 		bool GetLocalString (const char *ns,
 							 const char *path,
@@ -168,21 +180,21 @@ class dng_xmp_sdk
 				  const char *text);
 
 		void SetString (const char *ns,
-				  		const char *path,
-				  		const dng_string &s);
+						const char *path,
+						const dng_string &s);
 
 		void SetStringList (const char *ns,
-				  		    const char *path,
-				  		    const dng_string_list &list,
-				  		    bool isBag);
+							const char *path,
+							const dng_string_list &list,
+							bool isBag);
 
 		void SetAltLangDefault (const char *ns,
 								const char *path,
 								const dng_string &s);
 
-        void SetLocalString (const char *ns,
-                             const char *path,
-                             const dng_local_string &s);
+		void SetLocalString (const char *ns,
+							 const char *path,
+							 const dng_local_string &s);
 
 		void SetStructField (const char *ns,
 							 const char *path,
@@ -213,8 +225,15 @@ class dng_xmp_sdk
 
 		bool IteratePaths (IteratePathsCallback *callback,
 						   void *callbackData = nullptr,
-						   const char *startNS = 0,
-						   const char *startingPath = 0);
+						   const char *startNS = nullptr,
+						   const char *startingPath = nullptr,
+						   bool justChildren = false);
+
+		void DuplicateSubtree (const dng_xmp_sdk &source,
+							   const char *sourceNS,
+							   const char *sourceRoot,
+							   const char *destNS = nullptr,
+							   const char *destRoot = nullptr);
 
 		#if qDNGXMPDocOps
 
@@ -244,6 +263,10 @@ class dng_xmp_sdk
 
 /*****************************************************************************/
 
-#endif
+#endif	// qDNGUseXMP
+
+/*****************************************************************************/
+
+#endif	// __dng_xmp_sdk__
 
 /*****************************************************************************/

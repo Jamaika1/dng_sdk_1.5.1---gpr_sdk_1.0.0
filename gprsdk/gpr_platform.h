@@ -28,7 +28,7 @@
 // 2 to enable low level timing
 // =================================================================================================
 
-#define DNGSDK_VERSION 1510
+#define DNGSDK_VERSION 1600
 
 #ifndef GPR_TIMING
     #define GPR_TIMING 1
