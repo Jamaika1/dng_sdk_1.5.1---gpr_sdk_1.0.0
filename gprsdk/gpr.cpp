@@ -56,7 +56,7 @@
 #include "gpr_buffer_auto.h"
 
 #if GPR_READING
-#include "vc5_decoder.h"
+#include "vc5_decoder/vc5_decoder.h"
 #endif
 
 #if GPR_WRITING
@@ -1236,10 +1236,15 @@ static void write_dng(const gpr_allocator*          allocator,
 
             chromatic_aberration.fPlanes = 3;
             chromatic_aberration.fCenter = dng_point_real64( 0.5, 0.5 );
+#if (DNGSDK_VERSION >= 1600)
+            chromatic_aberration.fRadParams.fData[0][0] = tuning_info->warp_red_coefficient;
+            chromatic_aberration.fRadParams.fData[1][0] = 1.0;
+            chromatic_aberration.fRadParams.fData[2][0] = tuning_info->warp_blue_coefficient;
+#else
             chromatic_aberration.fRadParams[0][0] = tuning_info->warp_red_coefficient;
             chromatic_aberration.fRadParams[1][0] = 1.0;
             chromatic_aberration.fRadParams[2][0] = tuning_info->warp_blue_coefficient;
-
+#endif
             AutoPtr<dng_opcode> warp_opcode ( new dng_opcode_WarpRectilinear ( chromatic_aberration, 0x03 ));
 
             opcodelist3.Append( warp_opcode );
@@ -1414,13 +1419,21 @@ static void write_dng(const gpr_allocator*          allocator,
                 preview_list = new dng_preview_list;
 
                 AutoPtr<dng_jpeg_preview> jpeg_preview;
+
                 jpeg_preview.Reset(new dng_jpeg_preview);
+#if (DNGSDK_VERSION >= 1600)
+                jpeg_preview->fIFD.fPhotometricInterpretation = piYCbCr; // change fIDF protected
+#else
                 jpeg_preview->fPhotometricInterpretation = piYCbCr;
-
+#endif
                 jpeg_preview->fInfo.fIsPrimary = true;
-
+#if (DNGSDK_VERSION >= 1600)
+                jpeg_preview->fIFD.fImageLength          = preview_image.preview_height;
+                jpeg_preview->fIFD.fImageWidth           = preview_image.preview_width;
+#else
                 jpeg_preview->fPreviewSize.v             = preview_image.preview_height;
                 jpeg_preview->fPreviewSize.h             = preview_image.preview_width;
+#endif
                 jpeg_preview->fCompressedData.Reset(host.Allocate( preview_image.jpg_preview.size ));
                 memcpy( jpeg_preview->fCompressedData->Buffer_char(), preview_image.jpg_preview.buffer, preview_image.jpg_preview.size );
 
@@ -1435,8 +1448,11 @@ static void write_dng(const gpr_allocator*          allocator,
 
                 AutoPtr<dng_jpeg_preview> jpeg_preview;
                 jpeg_preview.Reset(new dng_jpeg_preview);
+#if (DNGSDK_VERSION >= 1600)
+                jpeg_preview->fIFD.fPhotometricInterpretation = piYCbCr; // change fIDF protected
+#else
                 jpeg_preview->fPhotometricInterpretation = piYCbCr;
-
+#endif
                 jpeg_preview->fInfo.fIsPrimary = true;
 
 
@@ -1453,8 +1469,13 @@ static void write_dng(const gpr_allocator*          allocator,
                 tje_encode_with_func(write_jpg_thumbnail, (void*)&context, 2, rgb_buffer.width, rgb_buffer.height, 3, (const unsigned char*)rgb_buffer.buffer );
 
                 size_t size = context.next_dst - context.orig_dst;
+#if (DNGSDK_VERSION >= 1600)
+                jpeg_preview->fIFD.fImageLength          = rgb_buffer.height;
+                jpeg_preview->fIFD.fImageWidth           = rgb_buffer.width;
+#else
                 jpeg_preview->fPreviewSize.v             = rgb_buffer.height;
                 jpeg_preview->fPreviewSize.h             = rgb_buffer.width;
+#endif
                 jpeg_preview->fCompressedData.Reset(host.Allocate( size ));
                 memcpy( jpeg_preview->fCompressedData->Buffer_char(), buffer.get_buffer(), size );
 
