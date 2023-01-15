@@ -326,7 +326,7 @@
 /// 1 if dng_validate command line tool is being built, 0 otherwise.
 
 #ifndef qDNGValidateTarget
-#define qDNGValidateTarget 0
+#define qDNGValidateTarget 1
 #endif
 
 /*****************************************************************************/
@@ -335,7 +335,7 @@
 /// 1 if DNG validation code is enabled, 0 otherwise.
 
 #ifndef qDNGValidate
-#define qDNGValidate qDNGValidateTarget
+#define qDNGValidate (qDNGValidateTarget)
 #endif
 
 /*****************************************************************************/
@@ -345,7 +345,7 @@
 /// specific interrupt mechanism.
 
 #ifndef qDNGPrintMessages
-#define qDNGPrintMessages qDNGValidate
+#define qDNGPrintMessages (qDNGValidateTarget)
 #endif
 
 /*****************************************************************************/
@@ -381,26 +381,26 @@
 /// 1 to use open-source libjpeg for lossy jpeg processing.
 
 #ifndef qDNGUsezLib
-#define qDNGUsezLib 0
+#define qDNGUsezLib (!(GPR_WRITING || GPR_READING) && qDNGValidateTarget)
 #endif
 #ifndef qDNGUseLibJPEG
-#define qDNGUseLibJPEG 0
+#define qDNGUseLibJPEG (!(GPR_WRITING || GPR_READING) && qDNGValidateTarget)
 #endif
 
 /*****************************************************************************/
 
 #ifndef qDNGAVXSupport
-#define qDNGAVXSupport ((qMacOS || qWinOS) && qDNG64Bit && !qARM && 1)
+#define qDNGAVXSupport ((qMacOS || qWinOS) && !qDNG64Bit && qARM && 1)
 #endif
 
-#if qDNGAVXSupport && !(qDNG64Bit && !qARM)
+#if qDNGAVXSupport && !qDNG64Bit && qARM
 #error AVX support is enabled when 64-bit support is not or ARM is
 #endif
 
 /*****************************************************************************/
 
 #ifndef qDNGSupportVC5
-#define qDNGSupportVC5 (1)
+#define qDNGSupportVC5 1
 #endif
 
 /*****************************************************************************/
@@ -409,7 +409,7 @@
 /// Set to 1 when using a Sanitizer tool.
 
 #ifndef qDNGUsingSanitizer
-#define qDNGUsingSanitizer (0)
+#define qDNGUsingSanitizer 0
 #endif
 
 /*****************************************************************************/

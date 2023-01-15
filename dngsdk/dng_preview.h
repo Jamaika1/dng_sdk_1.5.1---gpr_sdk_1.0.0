@@ -59,11 +59,11 @@ class dng_image_preview: public dng_preview
 
 		AutoPtr<dng_image> fImage;
 
-	protected:
-
-		mutable dng_ifd fIFD;
+	//protected:
 
 	public:
+
+		mutable dng_ifd fIFD;
 
 		dng_image_preview ();
 
